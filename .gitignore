@@ -22,7 +22,7 @@
 
 # Code::Blocks #
 ######################
-*.depends
+*.depend
 *.cbp
 *.gch
 *.layout
