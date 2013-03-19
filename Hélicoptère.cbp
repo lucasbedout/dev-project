@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Hélicoptère" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\Hélicoptère" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\Hélicoptère" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="C:\Users\admin\Desktop\Projet CodeBlock\SDL-1.2.15\include" />
+		</Compiler>
+		<Linker>
+			<Add library="mingw32" />
+			<Add library="SDLmain" />
+			<Add library="SDL.dll" />
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="winmm" />
+			<Add library="dxguid" />
+			<Add library="C:\Users\admin\Desktop\Projet CodeBlock\SDL-1.2.15\lib\SDL_image.lib" />
+			<Add library="..\..\..\..\..\Program Files (x86)\CodeBlocks\MinGW\lib\pthreadVCE2.lib" />
+			<Add directory="C:\Users\admin\Desktop\Projet CodeBlock\SDL-1.2.15\lib" />
+		</Linker>
+		<Unit filename="constantes.h" />
+		<Unit filename="editeur.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="editeur.h" />
+		<Unit filename="ennemie.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ennemie.h" />
+		<Unit filename="erreur.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="erreur.h" />
+		<Unit filename="fenetre.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fenetre.h" />
+		<Unit filename="helicoptere.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="helicoptere.h" />
+		<Unit filename="jeu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="jeu.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="map.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="map.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

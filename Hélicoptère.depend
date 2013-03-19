@@ -1,0 +1,521 @@
+# depslib dependency file v1.0
+1358442696 source:c:\users\admin\desktop\projet codeblock\hélicoptère\fenetre.h
+	<SDL/SDL.h>
+	<SDL_image.h>
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_audio.h"
+	"SDL_cdrom.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_loadso.h"
+	"SDL_mutex.h"
+	"SDL_rwops.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_video.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1326110988 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_config.h
+	"SDL_platform.h"
+	"SDL_config_dreamcast.h"
+	"SDL_config_macos.h"
+	"SDL_config_macosx.h"
+	"SDL_config_symbian.h"
+	"SDL_config_win32.h"
+	"SDL_config_os2.h"
+	"SDL_config_minimal.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_platform.h
+
+1326110994 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_config_win32.h
+	"SDL_platform.h"
+
+1326111000 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\begin_code.h
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\close_code.h
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_cdrom.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_active.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_quit.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_active.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keysym.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_keysym.h
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325788834 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_image.h
+	"SDL.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_audio.h"
+	"SDL_cdrom.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_loadso.h"
+	"SDL_mutex.h"
+	"SDL_rwops.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_video.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1326110988 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_config.h
+	"SDL_platform.h"
+	"SDL_config_dreamcast.h"
+	"SDL_config_macos.h"
+	"SDL_config_macosx.h"
+	"SDL_config_symbian.h"
+	"SDL_config_win32.h"
+	"SDL_config_os2.h"
+	"SDL_config_minimal.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_platform.h
+
+1326110994 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_config_win32.h
+	"SDL_platform.h"
+
+1326111000 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\begin_code.h
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\close_code.h
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_cdrom.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_active.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_quit.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_active.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keysym.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_keysym.h
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1325738640 c:\users\admin\desktop\projet codeblock\sdl-1.2.15\include\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1362953988 source:c:\users\admin\desktop\projet codeblock\hélicoptère\helicoptere.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	<math.h>
+	"constantes.h"
+	"helicoptere.h"
+	"erreur.h"
+	"map.h"
+
+1362928074 c:\users\admin\desktop\projet codeblock\hélicoptère\helicoptere.h
+
+1358296400 source:c:\users\admin\desktop\projet codeblock\hélicoptère\helicoptere.h
+
+1362940994 source:c:\users\admin\desktop\projet codeblock\hélicoptère\jeu.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"constantes.h"
+	"jeu.h"
+	"helicoptere.h"
+	"erreur.h"
+	"map.h"
+
+1361228202 c:\users\admin\desktop\projet codeblock\hélicoptère\jeu.h
+	<SDL/SDL.h>
+	<SDL_image.h>
+
+1358442724 source:c:\users\admin\desktop\projet codeblock\hélicoptère\jeu.h
+	<SDL/SDL.h>
+	<SDL_image.h>
+
+1358378723 source:c:\users\admin\desktop\projet codeblock\hélicoptère\main.cpp
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"fenetre.h"
+
+1359065778 c:\users\admin\desktop\projet codeblock\hélicoptère\fenetre.h
+	<SDL/SDL.h>
+	<SDL_image.h>
+
+1362661614 source:c:\users\admin\desktop\projet codeblock\hélicoptère\fenetre.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"constantes.h"
+	"fenetre.h"
+	"jeu.h"
+	"editeur.h"
+	"erreur.h"
+
+1358462184 c:\users\admin\desktop\projet codeblock\hélicoptère\fenetre.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"jeu.h"
+
+1358462044 c:\users\admin\desktop\projet codeblock\hélicoptère\jeu.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+
+1359901870 source:c:\users\admin\desktop\projet codeblock\hélicoptère\main.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"fenetre.h"
+	"erreur.h"
+
+1362693475 c:\users\admin\desktop\projet codeblock\hélicoptère\constantes.h
+
+1363130192 source:c:\users\admin\desktop\projet codeblock\hélicoptère\erreur.c
+	<stdio.h>
+	<stdlib.h>
+	"time.h"
+	"erreur.h"
+
+1363130209 c:\users\admin\desktop\projet codeblock\hélicoptère\erreur.h
+
+1362939451 source:c:\users\admin\desktop\projet codeblock\hélicoptère\map.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"constantes.h"
+	"map.h"
+	"erreur.h"
+
+1362938541 c:\users\admin\desktop\projet codeblock\hélicoptère\map.h
+
+1360181257 c:\users\admin\desktop\projet codeblock\hélicoptère\map.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"constantes.h"
+	"erreur.h"
+
+1362933292 source:c:\users\admin\desktop\projet codeblock\hélicoptère\editeur.c
+	<stdlib.h>
+	<stdio.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"constantes.h"
+	"editeur.h"
+	"map.h"
+	"erreur.h"
+
+1362932507 c:\users\admin\desktop\projet codeblock\hélicoptère\editeur.h
+
+1363130014 source:c:\users\admin\desktop\projet codeblock\hélicoptère\ennemie.c
+	<stdio.h>
+	<stdlib.h>
+	<SDL/SDL.h>
+	<SDL_image.h>
+	"constantes.h"
+	"ennemie.h"
+	"erreur.h"
+	"map.h"
+
+1363130042 c:\users\admin\desktop\projet codeblock\hélicoptère\ennemie.h
+

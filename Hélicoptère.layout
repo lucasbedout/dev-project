@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="constantes.h" open="1" top="0" tabpos="8">
+		<Cursor position="1268" topLine="21" />
+	</File>
+	<File name="editeur.c" open="1" top="0" tabpos="13">
+		<Cursor position="380" topLine="51" />
+	</File>
+	<File name="editeur.h" open="1" top="0" tabpos="14">
+		<Cursor position="1011" topLine="15" />
+	</File>
+	<File name="ennemie.c" open="1" top="1" tabpos="15">
+		<Cursor position="1491" topLine="153" />
+	</File>
+	<File name="ennemie.h" open="1" top="0" tabpos="16">
+		<Cursor position="1026" topLine="0" />
+	</File>
+	<File name="erreur.c" open="1" top="0" tabpos="9">
+		<Cursor position="3793" topLine="164" />
+	</File>
+	<File name="erreur.h" open="1" top="0" tabpos="10">
+		<Cursor position="847" topLine="0" />
+	</File>
+	<File name="fenetre.c" open="1" top="0" tabpos="2">
+		<Cursor position="1068" topLine="73" />
+	</File>
+	<File name="fenetre.h" open="1" top="0" tabpos="1">
+		<Cursor position="514" topLine="0" />
+	</File>
+	<File name="helicoptere.c" open="1" top="0" tabpos="3">
+		<Cursor position="2097" topLine="69" />
+	</File>
+	<File name="helicoptere.h" open="1" top="0" tabpos="6">
+		<Cursor position="1814" topLine="0" />
+	</File>
+	<File name="jeu.c" open="1" top="0" tabpos="4">
+		<Cursor position="2945" topLine="96" />
+	</File>
+	<File name="jeu.h" open="1" top="0" tabpos="5">
+		<Cursor position="583" topLine="0" />
+	</File>
+	<File name="main.c" open="1" top="0" tabpos="7">
+		<Cursor position="361" topLine="0" />
+	</File>
+	<File name="map.c" open="1" top="0" tabpos="11">
+		<Cursor position="8135" topLine="340" />
+	</File>
+	<File name="map.h" open="1" top="0" tabpos="12">
+		<Cursor position="1084" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>
