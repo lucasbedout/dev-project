@@ -554,7 +554,7 @@ void affiche_map_editeur(int **map,SDL_Surface *ecran,tilesets imageMap,int y,Li
                 }
             }
 
-            //on passe la liste suivante
+            //on passe a la liste suivante
             actuel=actuel->suivant;
         }
     }
