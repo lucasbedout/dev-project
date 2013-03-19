@@ -2,8 +2,8 @@
 ###################
 *.com
 *.class
-*.dll
 *.exe
+*.dll
 *.o
 *.so
 
@@ -22,7 +22,7 @@
 
 # Code::Blocks #
 ######################
-*.depends
+*.depend
 *.cbp
 *.gch
 *.layout
