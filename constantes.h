@@ -28,6 +28,8 @@ Date de dernière modification : 28/02/2013
 #define NOM_FICHIER_TIR_HELICO "tirHelico.png"
 //---------------------------------------------------------
 
+#define LARGEUR 800
+#define HAUTEUR 600
 #define TEMPS_POSE 50
 #define TAILLE_TABLEAU_TEMPS 30
 
