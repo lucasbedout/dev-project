@@ -1,4 +1,5 @@
-dev-project
-===========
+Supinfo dev project (C language) -- ToDO List
 
-Supinfo dev project (C language)
+- main lighter and fenetre.c in main -> OK
+- folders img/ and headers/ -> OK
+- reorganizing in a new architecture
