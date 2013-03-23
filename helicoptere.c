@@ -17,10 +17,10 @@ Date de dernière modification : 03/03/2013
 #include <SDL_image.h>
 #include <math.h>
 
-#include "constantes.h"
-#include "helicoptere.h"
-#include "erreur.h"
-#include "map.h"
+#include "headers/constantes.h"
+#include "headers/helicoptere.h"
+#include "headers/erreur.h"
+#include "headers/map.h"
 
 #define VITESSE_HELICO 3
 #define VITESSE_PROJECTILE 3

@@ -8,8 +8,8 @@ initialise les composants du jeu (fenêtres, variables etc...)
 #include <SDL/SDL.h>
 #include <SDL_image.h>
 
-#include "erreur.h"
-#include "constantes.h"
+#include "headers/erreur.h"
+#include "headers/constantes.h"
 
 int main (int argc, char** argv)
 {

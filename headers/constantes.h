@@ -13,19 +13,19 @@ Date de dernière modification : 28/02/2013
 #define CONSTANTES_H_INCLUDED
 
 //--------------------NOM FICHIER ECRAN/MAP--------------
-#define NOM_FICHIER_MENU "MenuEcran.png"
-#define NOM_FICHIER_MAP "map_scrolling.png"
-#define NOM_FICHIER_MAP_TERRE "terre.png"
-#define NOM_FICHIER_MAP_CIEL "ciel.png"
-#define NOM_FICHIER_MAP_ROUGE "scrolling.png"
+#define NOM_FICHIER_MENU "img/MenuEcran.png"
+#define NOM_FICHIER_MAP "img/map_scrolling.png"
+#define NOM_FICHIER_MAP_TERRE "img/terre.png"
+#define NOM_FICHIER_MAP_CIEL "img/ciel.png"
+#define NOM_FICHIER_MAP_ROUGE "img/scrolling.png"
 //-------------------------------------------------------
 
 //-----------------NOM FICHIER HELICO----------------------
-#define NOM_FICHIER_HELICO "helico.png"
-#define NOM_FICHIER_HELICO2 "helico2.png"
-#define NOM_FICHIER_HELICO3 "helico3.png"
-#define NOM_FICHIER_HELICO4 "helico4.png"
-#define NOM_FICHIER_TIR_HELICO "tirHelico.png"
+#define NOM_FICHIER_HELICO "img/helico.png"
+#define NOM_FICHIER_HELICO2 "img/helico2.png"
+#define NOM_FICHIER_HELICO3 "img/helico3.png"
+#define NOM_FICHIER_HELICO4 "img/helico4.png"
+#define NOM_FICHIER_TIR_HELICO "img/tirHelico.png"
 //---------------------------------------------------------
 
 #define LARGEUR 800

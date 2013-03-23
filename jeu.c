@@ -16,11 +16,11 @@ Date de dernière modification : 03/03/2013
 //si l'erreur "undefined reference to `IMG_Load' " ajouter le fichier "SDL_image.lib" dans l'éditeur de lien
 #include <SDL_image.h>
 
-#include "constantes.h"
-#include "jeu.h"
-#include "helicoptere.h"
-#include "erreur.h"
-#include "map.h"
+#include "headers/constantes.h"
+#include "headers/jeu.h"
+#include "headers/helicoptere.h"
+#include "headers/erreur.h"
+#include "headers/map.h"
 
 void jeu (SDL_Surface *ecran)
 {

@@ -16,10 +16,10 @@ Date de dernière modification : 12/03/2013
 //si l'erreur "undefined reference to `IMG_Load' " ajouter le fichier "SDL_image.lib" dans l'éditeur de lien
 #include <SDL_image.h>
 
-#include "constantes.h"
-#include "ennemie.h"
-#include "erreur.h"
-#include "map.h"
+#include "headers/constantes.h"
+#include "headers/ennemie.h"
+#include "headers/erreur.h"
+#include "headers/map.h"
 
 
 //-----------------------------------------------PARTIE TANK---------------------------------------------------

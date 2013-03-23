@@ -15,10 +15,10 @@ Date de dernière modifiction : 10/03/2013
 #include <SDL/SDL.h>
 #include <SDL_image.h>
 
-#include "constantes.h"
-#include "editeur.h"
-#include "map.h"
-#include "erreur.h"
+#include "headers/constantes.h"
+#include "headers/editeur.h"
+#include "headers/map.h"
+#include "headers/erreur.h"
 
 void editeur (SDL_Surface *ecran)
 {

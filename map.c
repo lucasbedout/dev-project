@@ -15,9 +15,9 @@ Date de dernière modifiction : 04/03/2013
 #include <SDL/SDL.h>
 #include <SDL_image.h>
 
-#include "constantes.h"
-#include "map.h"
-#include "erreur.h"
+#include "headers/constantes.h"
+#include "headers/map.h"
+#include "headers/erreur.h"
 
 void declaration_tilesets(tilesets *tilesetsMap)
 {
