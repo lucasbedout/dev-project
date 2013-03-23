@@ -11,72 +11,66 @@ initialise les composants du jeu (fenêtres, variables etc...)
 #include "erreur.h"
 #include "constantes.h"
 
-int main ( int argc, char** argv )
+int main (int argc, char** argv)
 {
 	int continuer = 1;
-    SDL_Surface* ecran;
+    SDL_Surface *ecran, *Menu;
+    SDL_Rect positionMenu;
+
     // initialisation de la SDL VIDEO
-    if (SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
     {
         printf("Impossible d'initialiser la librairie vidéo : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
     // création de l'écran
-    ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR, 32,SDL_HWSURFACE|SDL_DOUBLEBUF);
+    ecran = SDL_SetVideoMode(LARGEUR, HAUTEUR, 32, SDL_HWSURFACE|SDL_DOUBLEBUF);
     if (!ecran)
     {
-        printf("Impossible de creer une fenetre 800x600 video: %s\n", SDL_GetError());
+        printf("Erreur lors de la création de la fenêtre: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
-    //On nome la fenetre
     SDL_WM_SetCaption("Choplifter",NULL);
 
-    //Blittage et chargement d'un image PNG pour l'écran de menu
-    SDL_Surface *Menu=IMG_Load(NOM_FICHIER_MENU);
-    if (Menu==NULL)
-    {
-        erreur_image(NOM_FICHIER_MENU);
-    }
+    //affichage du menu
+    Menu = IMG_Load(NOM_FICHIER_MENU);
 
-    SDL_Rect positionMenu;
-    positionMenu.x=0;
-    positionMenu.y=0;
+    positionMenu.x = 0;
+    positionMenu.y = 0;
 
-    SDL_BlitSurface(Menu,NULL,ecran,&positionMenu);
-
-    //Boucle pour ne pas fermer la fenetre
+    //choix du menu
     while(continuer)
     {
 
-        SDL_Event even;
+        SDL_Event event;
 
-	    SDL_WaitEvent(&even);
+	    SDL_WaitEvent(&event);
 
-	    switch(even.type)
+	    switch(event.type)
 	    {
 	        case SDL_QUIT:
-	            continuer=0;
-	            break;
+	            continuer = 0;
+	       break;
 
 	        case SDL_KEYDOWN:
-	                switch(even.key.keysym.sym)
+	                switch(event.key.keysym.sym)
 	                {
 	                    case SDLK_ESCAPE:
 	                        continuer=0;
-	                        break;
+	                    break;
 	                    case SDLK_j:
 	                        jeu(ecran);
-	                        break;
+	                    break;
 	                    case SDLK_e:
 	                        editeur(ecran);
-	                        break;
+	                   break;
 	                }
-	                break;
+	        break;
 	    }
 
-        SDL_BlitSurface(Menu,NULL,ecran,&positionMenu);
+        SDL_BlitSurface(Menu, NULL, ecran, &positionMenu);
 
         SDL_Flip(ecran);
     }
