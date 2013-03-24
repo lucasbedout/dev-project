@@ -23,7 +23,7 @@ Date de dernière modification : 03/03/2013
 #include "headers/map.h"
 
 #define VITESSE_HELICO 3
-#define VITESSE_PROJECTILE 3
+#define VITESSE_PROJECTILE 1
 
 void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
 {
@@ -150,7 +150,7 @@ int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sp
     }
 }
 
-void tirHelico(SDL_Event* even,int *actionEnCour,SDL_Rect *cible, SDL_Rect *position,sprite *helico,SDL_Surface *ecran,double *a,double *b,int *equation)
+void tirHelico(SDL_Event* even,int *actionEnCour,SDL_Rect *cible, SDL_Rect *position,sprite *helico,double *a,double *b,int *equation,int positionMap,tilesets *tilesetsMap)
 {
     //le i sera utilisé dans une boucle for plus tard dans cette fonction. Les différences seront comparait dans l'algo pour fluidé la trajectoire
     int i=0,differenceX=0,differenceY=0;
@@ -165,10 +165,10 @@ void tirHelico(SDL_Event* even,int *actionEnCour,SDL_Rect *cible, SDL_Rect *posi
                     switch(even->button.button)
                     {
                         case SDL_BUTTON_LEFT:
-                            cible->x=even->button.x;
-                            cible->y=even->button.y;
-                            position->x=(helico->image1.position.x+helico->image1.image->w/2);
-                            position->y=(helico->image1.position.y+helico->image1.position.h);
+                            cible->x=((even->button.x)/tilesetsMap->image[0]->w)+positionMap-((helico->imageUtilise.positionEcran->w/tilesetsMap->image[0]->w)/2);
+                            cible->y=(even->button.y)/tilesetsMap->image[0]->h;
+                            position->x=positionMap;
+                            position->y=(helico->image1.position.y+helico->image1.position.h)/tilesetsMap->image[0]->h;
                             *actionEnCour=1;
                             break;
                     }
@@ -301,47 +301,4 @@ void Gestion_Vie_helico(int *vie,sprite *helico,sprite *tank,SDL_Rect *tir_Tank,
        {
             *vie-=1;
        }
-}
-
-int hotage_monte_helico(sprite *helico,sprite *otage, int** map,tilesets *tilesetsMap,int positionActu)
-{
-    //on regarde si l'hélico est attérie et si un otage "touche" l'hélico
-    if(1==atterrissageHelico(helico,map,tilesetsMap,positionActu) && ( ( (helico->image1.position.x)<=(otage->image1.position.x+otage->image1.position.w) && (helico->image1.position.x+helico->image1.position.w)>=otage->image1.position.x ) ||
-         ( (helico->image1.position.y)<=(otage->image1.position.y+otage->image1.position.h) && (helico->image1.position.y+helico->image1.position.h)>=otage->image1.position.y ) ) )
-    {
-        //on rajoute un otage
-        return 1;
-    }
-    //sinon on ne fait rien et on rajoute aucun otage
-    else
-    {
-        return 0;
-    }
-}
-
-void hotage_dessend_helico(int positionMap,int *nbOtageHelico,int file,sprite *helico, int** map,tilesets *tilesetsMap,int positionActu)
-{
-    /*On vérifie : Si on est a la base, si on a des otages qui sont dans l'helico,
-    si l'hélico est attérie, et si aucun otage est en route pour rentré a la base */
-    if(positionMap==0 && *nbOtageHelico>0 && atterrissageHelico(helico,map,tilesetsMap,positionActu)==1 && file==0)
-    {
-        //fonction a faire pour dirigé les otages vers la base
-        *nbOtageHelico-=1;
-    }
-}
-
-int Helico_ecrase_otage(sprite *helico,sprite *otage,int** map,tilesets *tilesetsMap,int positionActu)
-{
-     //on regarde si l'hélico n'est pas attérie et si un otage "touche" l'hélico
-    if(0==atterrissageHelico(helico,map,tilesetsMap,positionActu) && ( ( (helico->image1.position.x)<=(otage->image1.position.x+otage->image1.position.w) && (helico->image1.position.x+helico->image1.position.w)>=otage->image1.position.x ) ||
-         ( (helico->image1.position.y)<=(otage->image1.position.y+otage->image1.position.h) && (helico->image1.position.y+helico->image1.position.h)>=otage->image1.position.y ) ) )
-    {
-        //on confirme qu'un otage a été écrasé
-        return 1;
-    }
-    //sinon on ne fait rien
-    else
-    {
-        return 0;
-    }
 }

@@ -340,7 +340,6 @@ int hauteur_sol(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int j)
 
 void decallement_image_map(sprite *image,tilesets *tilesetsMap,int i,int j,int positionMap,SDL_Surface *numeroImage)
 {
-    //code ici
     //une image est placé de façon fixe a un endroit. Cette fonction permet de la déplacé celon le scrolling map
     int n=0,m=0;
     n=image->imageUtilise.positionEcran->h/tilesetsMap->image[0]->h;

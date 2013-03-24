@@ -13,6 +13,8 @@ initialise les composants du jeu (fenêtres, variables etc...)
 
 int main (int argc, char** argv)
 {
+    supr_fichier_erreur();
+
 	int continuer = 1;
     SDL_Surface *ecran, *Menu;
     SDL_Rect positionMenu;

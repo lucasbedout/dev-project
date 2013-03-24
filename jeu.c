@@ -19,6 +19,7 @@ Date de dernière modification : 03/03/2013
 #include "headers/constantes.h"
 #include "headers/jeu.h"
 #include "headers/helicoptere.h"
+#include "headers/actionsCommunes.h"
 #include "headers/erreur.h"
 #include "headers/map.h"
 
@@ -50,6 +51,9 @@ void jeu (SDL_Surface *ecran)
     //---------TIR DE L HELICO-------
     double coefA=0.0,coefB=0.0;
     int equation=0;
+
+    //créationdes position ( pour le tir de l'hélico ) et pour la cible
+    SDL_Rect cible,positionTirHelico;
     //-------------------------------
     //---------------------------------------
 
@@ -82,9 +86,6 @@ void jeu (SDL_Surface *ecran)
     //-------------VARIABLE DU JEU GLOBAL-----------------------------
     int continuer=verif_erreur();
 
-    //créationdes position ( pour le tir de l'hélico )
-    SDL_Rect cible,position;
-
     tempsJeu.tempsActuel=SDL_GetTicks(); //temps actuel du jeu
     //----------------------------------------------------------------
 
@@ -96,11 +97,13 @@ void jeu (SDL_Surface *ecran)
 
         //On blitte toute les surfaces et on rafraichie l'image
         affiche_map(map,ecran,tilesetsMap,positionMap);
-        //decallement_image_map(&helico,&tilesetsMap,20,40,positionMap,helico.image2.image);
+        //decallement_image_map(&helico,&tilesetsMap,10,0,positionMap,helico.imageUtilise.tir);
         //blitte le tir que si le tir est en cour
-        tirHelico(&even,&actionEnCour,&cible,&position,&helico,ecran,&coefA,&coefB,&equation);
+        tirHelico(&even,&actionEnCour,&cible,&positionTirHelico,&helico,&coefA,&coefB,&equation,positionMap,&tilesetsMap);
         if(actionEnCour==1)
-        {SDL_BlitSurface(helico.imageUtilise.tir,NULL,ecran,&position);}
+        {
+            decallement_image_map(&helico,&tilesetsMap,positionTirHelico.y,positionTirHelico.x,positionMap,helico.imageUtilise.tir);
+        }
         //Gestion des colisions
         GestionColision(&helico,map,&tilesetsMap,positionMap);
         //On blitte les animations de l'hélico en fonction si l'hélico est atérie ou pas
