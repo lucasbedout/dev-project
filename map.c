@@ -338,7 +338,7 @@ int hauteur_sol(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int j)
     return i;
 }
 
-void decallement_image_map(sprite *image,tilesets *tilesetsMap,int i,int j,int positionMap,SDL_Surface *numeroImage)
+void decallement_image_map_hauteurPixel(sprite *image,tilesets *tilesetsMap,int hauteurPixel,int j,int positionMap,SDL_Surface *numeroImage)
 {
     //une image est placé de façon fixe a un endroit. Cette fonction permet de la déplacé celon le scrolling map
     int n=0,m=0;
@@ -351,7 +351,7 @@ void decallement_image_map(sprite *image,tilesets *tilesetsMap,int i,int j,int p
     {
         //position de base de l'image ( image centré )
         position.x=(m/2)*(tilesetsMap->image[0]->w);
-        position.y=i*(tilesetsMap->image[0]->h);
+        position.y=hauteurPixel;
 
         //Si l'image se situe vers la gauche du centre de la map
         if(positionMap>j)
@@ -361,7 +361,6 @@ void decallement_image_map(sprite *image,tilesets *tilesetsMap,int i,int j,int p
 
             //attribution des coordonnées
             position.x=decallement*(tilesetsMap->image[0]->w);
-            position.y=i*(tilesetsMap->image[0]->h);
         }
         //Sinon si l'image se situe vers la droite du centre de la map
         else if(positionMap<j)
@@ -371,7 +370,6 @@ void decallement_image_map(sprite *image,tilesets *tilesetsMap,int i,int j,int p
 
             //attribution des coordonnées
             position.x=decallement*(tilesetsMap->image[0]->w);
-            position.y=i*(tilesetsMap->image[0]->h);
         }
 
         //blittage de l'image

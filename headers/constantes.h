@@ -28,6 +28,13 @@ Date de dernière modification : 28/02/2013
 #define NOM_FICHIER_TIR_HELICO "img/tirHelico.png"
 //---------------------------------------------------------
 
+//-----------------NOM FICHIER TANK----------------------
+#define NOM_FICHIER_TANK "img/tank1.png"
+#define NOM_FICHIER_TANK2 "img/tank2.png"
+#define NOM_FICHIER_TANK3 "img/tank3.png"
+#define NOM_FICHIER_TANK4 "img/tank4.png"
+//---------------------------------------------------------
+
 #define LARGEUR 800
 #define HAUTEUR 600
 #define TEMPS_POSE 50

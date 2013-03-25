@@ -6,7 +6,7 @@ Fait par : Mehdi
 
 Rôle : Permet de lancer le jeu et les fonction principal comme l'hélicoptère, les énnemies, la map, etc...
 
-Date de dernière modification : 03/03/2013
+Date de dernière modification : 26/03/2013
 
 */
 #include <stdio.h>
@@ -43,7 +43,7 @@ void jeu (SDL_Surface *ecran)
     sprite helico;
     iniPosHelicoptere(ecran,&helico);
     //Type AnimeHelico permet de savoir quel image est actuellement blitter
-    int typeAnimeHelico=IMAGE1,actionEnCour=0;
+    int actionEnCour=0;
     helico.imageUtilise.positionEcran=ecran;
     //on commence par l'image 1 et avec la position de l'hélico vers la gauche
     helico.imageUtilise.numeroImage=IMAGE1;
@@ -61,6 +61,11 @@ void jeu (SDL_Surface *ecran)
     //------------------------------------------
 
     //---------VARIABLE TANK--------------------
+    sprite tank;
+    iniTank(ecran,&tank);
+    tank.imageUtilise.positionEcran=ecran;
+    tank.imageUtilise.numeroImage=IMAGE1;
+    tank.imageUtilise.direction=GAUCHE;
     //------------------------------------------
 
     //---------VARIABLE AVION-------------------
@@ -97,24 +102,27 @@ void jeu (SDL_Surface *ecran)
 
         //On blitte toute les surfaces et on rafraichie l'image
         affiche_map(map,ecran,tilesetsMap,positionMap);
-        //decallement_image_map(&helico,&tilesetsMap,10,0,positionMap,helico.imageUtilise.tir);
         //blitte le tir que si le tir est en cour
         tirHelico(&even,&actionEnCour,&cible,&positionTirHelico,&helico,&coefA,&coefB,&equation,positionMap,&tilesetsMap);
         if(actionEnCour==1)
         {
-            decallement_image_map(&helico,&tilesetsMap,positionTirHelico.y,positionTirHelico.x,positionMap,helico.imageUtilise.tir);
+            decallement_image_map_hauteurPixel(&helico,&tilesetsMap,positionTirHelico.y,positionTirHelico.x,positionMap,helico.imageUtilise.tir);
         }
         //Gestion des colisions
         GestionColision(&helico,map,&tilesetsMap,positionMap);
         //On blitte les animations de l'hélico en fonction si l'hélico est atérie ou pas
         if(0==atterrissageHelico(&helico,map,&tilesetsMap,positionMap))
         {
-            typeAnimeHelico=animationHelico(typeAnimeHelico,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[1],ecran,&helico);
+            helico.imageUtilise.numeroImage=animationHelico(helico.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[1],ecran,&helico);
         }
         else
         {
             SDL_BlitSurface(helico.image1.image,NULL,ecran,&helico.image1.position);
         }
+
+        //animation ennemies
+        deplacementTank(&tank,positionMap,&tilesetsMap,map);
+        tank.imageUtilise.numeroImage=animationSprite(tank.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[2],&tank,&tilesetsMap,positionMap);
 
         SDL_Flip(ecran);
 
@@ -132,6 +140,10 @@ void jeu (SDL_Surface *ecran)
     SDL_FreeSurface(helico.image3.image);
     SDL_FreeSurface(helico.image4.image);
     SDL_FreeSurface(helico.imageUtilise.tir);
+    SDL_FreeSurface(tank.image1.image);
+    SDL_FreeSurface(tank.image2.image);
+    SDL_FreeSurface(tank.image3.image);
+    SDL_FreeSurface(tank.image4.image);
     liberation_tilesets(&tilesetsMap);
 
 }

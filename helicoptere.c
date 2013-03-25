@@ -6,7 +6,7 @@ Fait par : Mehdi
 
 Rôle : Mouvement, tir, atterrissage,etc... Tout ce qui concerne l'hélicoptère en lui même est dans ce fichier
 
-Date de dernière modification : 03/03/2013
+Date de dernière modification : 26/03/2013
 
 */
 
@@ -166,9 +166,11 @@ void tirHelico(SDL_Event* even,int *actionEnCour,SDL_Rect *cible, SDL_Rect *posi
                     {
                         case SDL_BUTTON_LEFT:
                             cible->x=((even->button.x)/tilesetsMap->image[0]->w)+positionMap-((helico->imageUtilise.positionEcran->w/tilesetsMap->image[0]->w)/2);
-                            cible->y=(even->button.y)/tilesetsMap->image[0]->h;
+                            //cible->y=(even->button.y)/tilesetsMap->image[0]->h;
+                            cible->y=even->button.y;
                             position->x=positionMap;
-                            position->y=(helico->image1.position.y+helico->image1.position.h)/tilesetsMap->image[0]->h;
+                            //position->y=(helico->image1.position.y+helico->image1.position.h)/tilesetsMap->image[0]->h;
+                            position->y=(helico->image1.position.y+helico->image1.position.h);
                             *actionEnCour=1;
                             break;
                     }

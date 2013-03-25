@@ -3,6 +3,7 @@
 
 //---------------------------------PARTIE TANK-----------------------------------------
 void iniTank(SDL_Surface *ecran,sprite *tank);
+void deplacementTank(sprite *tank,int positionMap,tilesets *tilesetsMap,int** map);
 //-------------------------------------------------------------------------------------
 
 //---------------------------------PARTIE AVION----------------------------------------
@@ -14,7 +15,7 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe);
 //-------------------------------------------------------------------------------------
 
 //---------------------------------PARTIE GENERAL--------------------------------------
-int animationEnnemie(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sprite *ennemie);
+
 //-------------------------------------------------------------------------------------
 
 #endif // ENNEMIE_H_INCLUDED

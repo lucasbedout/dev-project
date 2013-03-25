@@ -32,27 +32,27 @@ void iniTank(SDL_Surface *ecran,sprite *tank)
     tank->image1.image=NULL;
 
     //chargement des images du tank
-    tank->image1.image=IMG_Load(NOM_FICHIER_HELICO);
-    tank->image2.image=IMG_Load(NOM_FICHIER_HELICO2);
-    tank->image3.image=IMG_Load(NOM_FICHIER_HELICO3);
-    tank->image4.image=IMG_Load(NOM_FICHIER_HELICO4);
+    tank->image1.image=IMG_Load(NOM_FICHIER_TANK);
+    tank->image2.image=IMG_Load(NOM_FICHIER_TANK2);
+    tank->image3.image=IMG_Load(NOM_FICHIER_TANK3);
+    tank->image4.image=IMG_Load(NOM_FICHIER_TANK4);
 
     //verification que l'image soit bien charger
     if(tank->image1.image==NULL)
     {
-        erreur_image(NOM_FICHIER_HELICO);
+        erreur_image(NOM_FICHIER_TANK);
     }
     if(tank->image2.image==NULL)
     {
-        erreur_image(NOM_FICHIER_HELICO2);
+        erreur_image(NOM_FICHIER_TANK2);
     }
     if(tank->image3.image==NULL)
     {
-        erreur_image(NOM_FICHIER_HELICO3);
+        erreur_image(NOM_FICHIER_TANK3);
     }
     if(tank->image4.image==NULL)
     {
-        erreur_image(NOM_FICHIER_HELICO4);
+        erreur_image(NOM_FICHIER_TANK4);
     }
 
     //initialisation des position du tank
@@ -61,18 +61,20 @@ void iniTank(SDL_Surface *ecran,sprite *tank)
 
     //chargement de l'image du tir associer au tank
     tank->imageUtilise.tir=NULL;
-    tank->imageUtilise.tir=IMG_Load(NOM_FICHIER_TIR_HELICO);
+    /*tank->imageUtilise.tir=IMG_Load(NOM_FICHIER_TIR_HELICO);
 
     //verification que l'image soit bien charger
     if(tank->imageUtilise.tir==NULL)
     {
         erreur_image(NOM_FICHIER_TIR_HELICO);
-    }
+    }*/
 }
 
-void deplacementTank(sprite *helico,SDL_Event* even,int *positionMap,tilesets *tilesetsMap,int** map)
+void deplacementTank(sprite *tank,int positionMap,tilesets *tilesetsMap,int** map)
 {
-    //Code ici
+    //tank->image1.position.y=((tank->imageUtilise.positionEcran->h-hauteur_sol(map,tilesetsMap,tank->imageUtilise.positionEcran,positionMap)-tank->image1.image->h)/tilesetsMap->image[0]->h);
+    tank->image1.position.y=tank->imageUtilise.positionEcran->h-hauteur_sol(map,tilesetsMap,tank->imageUtilise.positionEcran,positionMap)-tank->image1.image->h;
+    tank->image1.position.x=positionMap;
 }
 //-------------------------------------------------------------------------------------------------------------
 
@@ -166,41 +168,5 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
 //-------------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------PARTIE GENERAL----------------------------------------------
-int animationEnnemie(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sprite *ennemie)
-{
-    if(ennemie->imageUtilise.direction==GAUCHE)
-    {
-        //si l'image 1 est blitter et que le temps est supérieur a 50ms on blitte l'image 2
-        if( ( (image==IMAGE1) && ((tempsActu-tempsPrece)>50) ) || image==IMAGE3 || image==IMAGE4 )
-        {
-            SDL_BlitSurface(ennemie->image2.image,NULL,ecran,&(ennemie->image1.position));
 
-            return IMAGE2;
-        }
-        //même logique sauf qu'on veut blitter l'image 1
-        else if ( (image==IMAGE2) && ((tempsActu-tempsPrece)>50) );
-        {
-            SDL_BlitSurface(ennemie->image1.image,NULL,ecran,&(ennemie->image1.position));
-
-            return IMAGE1;
-        }
-    }
-    else if(ennemie->imageUtilise.direction==DROITE)
-    {
-        //si l'image 3 est blitter et que le temps est supérieur a 50ms on blitte l'image 4
-        if( ( (image==IMAGE3) && ((tempsActu-tempsPrece)>50) ) || image==IMAGE1 || image==IMAGE2 )
-        {
-            SDL_BlitSurface(ennemie->image4.image,NULL,ecran,&(ennemie->image1.position));
-
-            return IMAGE4;
-        }
-        //même logique sauf qu'on veut blitter l'image 1
-        else if ( (image==IMAGE4) && ((tempsActu-tempsPrece)>50) );
-        {
-            SDL_BlitSurface(ennemie->image3.image,NULL,ecran,&(ennemie->image1.position));
-
-            return IMAGE3;
-        }
-    }
-}
 //-------------------------------------------------------------------------------------------------------------

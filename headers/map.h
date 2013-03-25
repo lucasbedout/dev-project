@@ -6,7 +6,7 @@ Fait par : Mehdi
 
 Rôle : Contient les fonctions de gestion de map
 
-Date de dernière modification : 04/03/2013
+Date de dernière modification : 26/03/2013
 
 */
 #ifndef MAP_H_INCLUDED
@@ -28,7 +28,7 @@ void liberation_tilesets(tilesets *tilesetsMap);
 int limite_map(sprite *helico,tilesets *imageMap);
 //retourne le nombre de pixel la hauteur du sol
 int hauteur_sol(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int j);
-//
-void decallement_image_map(sprite *image,tilesets *tilesetsMap,int i,int j,int positionMap,SDL_Surface *numeroImage);
+//Permet a une image de se "fixé sur la map" et non se "fixé par rapport a la fenetre" sauf que l'unité de valeur de l'hauteur est en pixel
+void decallement_image_map_hauteurPixel(sprite *image,tilesets *tilesetsMap,int hauteurPixel,int j,int positionMap,SDL_Surface *numeroImage);
 
 #endif // MAP_H_INCLUDED
