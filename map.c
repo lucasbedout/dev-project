@@ -256,28 +256,13 @@ void affiche_map(int **map,SDL_Surface *ecran,tilesets imageMap,int y)
     {
         for(j=0;j<m;j++)
         {
-            if(map[i][j+y]==0)
+            if(map[i][j+y]<NB_TILESETS)
             {
-                position.y=i*(imageMap.image[0]->h);
-                position.x=j*(imageMap.image[0]->w);
+                position.y=i*(imageMap.image[map[i][j+y]]->h);
+                position.x=j*(imageMap.image[map[i][j+y]]->w);
 
-                SDL_BlitSurface(imageMap.image[0],NULL,ecran,&position);
+                SDL_BlitSurface(imageMap.image[map[i][j+y]],NULL,ecran,&position);
             }
-            else if(map[i][j+y]==1)
-            {
-                position.y=i*(imageMap.image[1]->h);
-                position.x=j*(imageMap.image[1]->w);
-
-                SDL_BlitSurface(imageMap.image[1],NULL,ecran,&position);
-            }
-            else if(map[i][j+y]==2)
-            {
-                position.y=i*(imageMap.image[2]->h);
-                position.x=j*(imageMap.image[2]->w);
-
-                SDL_BlitSurface(imageMap.image[2],NULL,ecran,&position);
-            }
-
             //on blitte le ciel si le numéro de l'image est incorrect
             else
             {
@@ -298,7 +283,7 @@ void liberation_tilesets(tilesets *tilesetsMap)
     const int nombreImage=3;
     //on libére les images chargé
     for(i=0;i<(nombreImage);i++)
-    {SDL_FreeSurface(tilesetsMap->image[0]);}
+    {SDL_FreeSurface(tilesetsMap->image[i]);}
 }
 
 int limite_map(sprite *helico,tilesets *imageMap)
@@ -317,17 +302,18 @@ int limite_map(sprite *helico,tilesets *imageMap)
 
 int hauteur_sol(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int j)
 {
-    int i=0,n=0;
+    int i=0,n=0,m=0;
     n=ecran->h/tilesetsMap->image[0]->h;
+    m=ecran->w/tilesetsMap->image[0]->w;
 
     //on regarde toute les lignes et on voit si une des lignes contient de la terre
     //j+(n/2)=> le milieu de la map actuellement affiché a l'écran
-    for(i=0;(map[i][j+(n/2)]!=0) && (i<(n-1));i++);
+    for(i=0;(map[i][j+(m/2)]!=0) && (i<(n-1));i++);
 
     /*Si on arrive a la dernière ligne, pour évité d'acceder a une zone mémoire non allouer par le programme
     on vérifie la dernière valeur de celle-ci. Si elle est différente du tilesets sol, on retourne la valeur
     de la hauteur de la map pour indiquer qu'il n'y a pas de sol*/
-    if(i==(n-1) && map[i][j+(n/2)]!=0 )
+    if(i==(n-1) && map[i][j+(m/2)]!=0 )
     {
         i=n;
     }
@@ -375,4 +361,19 @@ void decallement_image_map_hauteurPixel(sprite *image,tilesets *tilesetsMap,int 
         //blittage de l'image
         SDL_BlitSurface(numeroImage,NULL,image->imageUtilise.positionEcran,&position);
     }
+}
+
+int hauteur_sol_max(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int positionIni,int positionFin)
+{
+    int interval=positionFin-positionIni,max=0,i=0;
+
+    for(i=0;i<=interval;i++)
+    {
+        if( hauteur_sol(map,tilesetsMap,ecran,(positionIni+i) )>max )
+        {
+            max=hauteur_sol(map,tilesetsMap,ecran,(positionIni+i) );
+        }
+    }
+
+    return max;
 }

@@ -18,8 +18,8 @@ void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico);
 void deplacementHelico(sprite *helico,SDL_Event* even,int *positionMap,tilesets *tilesetsMap,int** map);
 //Anime le sprite de l'hélicoptère
 int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sprite *helico);
-//Gestion du tir de l'hélicoptère
-void tirHelico(SDL_Event* even,int *actionEnCour,SDL_Rect *cible, SDL_Rect *position,sprite *helico,double *a,double *b,int *equation,int positionMap,tilesets *tilesetsMap);
+//Calcul la trajectoire du tir
+void calculTrajectoireTirHelico(SDL_Event* even,sprite *helico,int positionMap,tilesets *tilesetsMap);
 //gestion des colisions
 void GestionColision(sprite *helico,int** map,tilesets *tilesetsMap,int positionActu);
 //retour 0 si l'hélicoptère vole sinon retourne 1 si il est atterrie

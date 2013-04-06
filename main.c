@@ -42,9 +42,14 @@ int main (int argc, char** argv)
     positionMenu.x = 0;
     positionMenu.y = 0;
 
+    //on vérifie si une erreur c'est produite
+    continuer=verif_erreur();
+
     //choix du menu
     while(continuer)
     {
+        //On vérifie si une erreur c'est produit dans le jeu, dans l'éditeur ou dans le menu
+        continuer=verif_erreur();
 
         SDL_Event event;
 
@@ -60,12 +65,20 @@ int main (int argc, char** argv)
 	                switch(event.key.keysym.sym)
 	                {
 	                    case SDLK_ESCAPE:
+	                    case SDLK_3:
+	                    case SDLK_KP3:
 	                        continuer=0;
 	                    break;
+
 	                    case SDLK_j:
+	                    case SDLK_1:
+	                    case SDLK_KP1:
 	                        jeu(ecran);
 	                    break;
+
 	                    case SDLK_e:
+                        case SDLK_2:
+	                    case SDLK_KP2:
 	                        editeur(ecran);
 	                   break;
 	                }
@@ -75,6 +88,7 @@ int main (int argc, char** argv)
         SDL_BlitSurface(Menu, NULL, ecran, &positionMenu);
 
         SDL_Flip(ecran);
+
     }
 
     SDL_FreeSurface(Menu);

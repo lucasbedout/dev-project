@@ -30,5 +30,7 @@ int limite_map(sprite *helico,tilesets *imageMap);
 int hauteur_sol(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int j);
 //Permet a une image de se "fixé sur la map" et non se "fixé par rapport a la fenetre" sauf que l'unité de valeur de l'hauteur est en pixel
 void decallement_image_map_hauteurPixel(sprite *image,tilesets *tilesetsMap,int hauteurPixel,int j,int positionMap,SDL_Surface *numeroImage);
+//Retourne la hauteur la plus grande de l'interval
+int hauteur_sol_max(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int positionIni,int positionFin);
 
 #endif // MAP_H_INCLUDED

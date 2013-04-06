@@ -144,7 +144,7 @@ void selection(int* continuer,SDL_Event *even,int *typeImage,int *molette)
     switch(even->type)
     {
         case SDL_QUIT:
-            //*continuer=0;
+            *continuer=0;
             break;
 
         case SDL_KEYDOWN:
@@ -172,7 +172,7 @@ void selection(int* continuer,SDL_Event *even,int *typeImage,int *molette)
             switch(even->button.button)
             {
                 case SDL_BUTTON_WHEELDOWN:
-                    if( (*molette-1)>0 )
+                    if( (*molette-1)>=0 )
                     {
                         *molette-=1;
                         *typeImage=*molette;
@@ -445,28 +445,14 @@ void affiche_map_editeur(int **map,SDL_Surface *ecran,tilesets imageMap,int y,Li
         {
             for(j=y;j<m;j++)
             {
-                if(map[i][j]==0)
+                //blitte la surface qui correspond a la partie de la map
+                if(map[i][j]<NB_TILESETS)
                 {
-                    position.y=i*(imageMap.image[0]->h);
-                    position.x=(j-y)*(imageMap.image[0]->w);
+                    position.y=i*(imageMap.image[map[i][j]]->h);
+                    position.x=(j-y)*(imageMap.image[map[i][j]]->w);
 
-                    SDL_BlitSurface(imageMap.image[0],NULL,ecran,&position);
+                    SDL_BlitSurface(imageMap.image[map[i][j]],NULL,ecran,&position);
                 }
-                else if(map[i][j]==1)
-                {
-                    position.y=i*(imageMap.image[1]->h);
-                    position.x=(j-y)*(imageMap.image[1]->w);
-
-                    SDL_BlitSurface(imageMap.image[1],NULL,ecran,&position);
-                }
-                else if(map[i][j]==2)
-                {
-                    position.y=i*(imageMap.image[2]->h);
-                    position.x=(j-y)*(imageMap.image[2]->w);
-
-                    SDL_BlitSurface(imageMap.image[2],NULL,ecran,&position);
-                }
-
                 //on blitte le ciel si le numéro de l'image est incorrect
                 else
                 {
@@ -518,28 +504,13 @@ void affiche_map_editeur(int **map,SDL_Surface *ecran,tilesets imageMap,int y,Li
                     //boucle qui parcour les colonnes
                     for(z=decallement;z<m;z++)
                     {
-                        if(actuel->colonne[i]==0)
+                        if(actuel->colonne[i]<NB_TILESETS)
                         {
-                            position.y=i*(imageMap.image[0]->h);
-                            position.x=z*(imageMap.image[0]->w);
+                            position.y=i*(imageMap.image[actuel->colonne[i]]->h);
+                            position.x=z*(imageMap.image[actuel->colonne[i]]->w);
 
-                            SDL_BlitSurface(imageMap.image[0],NULL,ecran,&position);
+                            SDL_BlitSurface(imageMap.image[actuel->colonne[i]],NULL,ecran,&position);
                         }
-                        else if(actuel->colonne[i]==1)
-                        {
-                            position.y=i*(imageMap.image[1]->h);
-                            position.x=z*(imageMap.image[1]->w);
-
-                            SDL_BlitSurface(imageMap.image[1],NULL,ecran,&position);
-                        }
-                        else if(actuel->colonne[i]==2)
-                        {
-                            position.y=i*(imageMap.image[2]->h);
-                            position.x=z*(imageMap.image[2]->w);
-
-                            SDL_BlitSurface(imageMap.image[2],NULL,ecran,&position);
-                        }
-
                         //on blitte le ciel si le numéro de l'image est incorrect
                         else
                         {
