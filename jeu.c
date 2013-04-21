@@ -40,8 +40,14 @@ void jeu (SDL_Surface *ecran)
     //positionMap permet de déplacé la map pour faire un scrolling
     int positionMap=0;
     tilesets tilesetsMap;
+
+    #if MODE_DESIGNER==1
+    chargTileAuto("img/Tilesets",&tilesetsMap);
+    #else
     declaration_tilesets(&tilesetsMap);
-    map=chargement_map(ecran);
+    #endif
+
+    map=chargement_map(ecran,tilesetsMap);
     //--------------------------------------------------------------
 
     //---------VARIABLE HELICO---------------
@@ -61,6 +67,13 @@ void jeu (SDL_Surface *ecran)
     //------------------------------------------
 
     //---------VARIABLE AVION-------------------
+    sprite avion;
+    iniAvion(ecran,&avion);
+    //test
+    avion.image[IMAGE1].position.x=50;
+    //------------------------------------------
+
+    //---------VARIABLE AVION-------------------
     //------------------------------------------
 
     //---------VARIABLE BASE--------------------
@@ -77,9 +90,10 @@ void jeu (SDL_Surface *ecran)
     //---------VARIABLE CASERNE-----------------
     int nbCaserne=NB_CASERNE;
     sprite caserne[NB_CASERNE+1];
+    //On commence le point d'origine ( de la base ) des caserne après la moitier de la fenetre
     for(i=0;i<nbCaserne || i<NOMBRE_MAX_CASERNE;i++)
     {
-        iniCaserne(ecran,&caserne[i],map,&tilesetsMap,(i*ECART_BASE_CASERNE+ECART_CASERNE_CASERNE));
+        iniCaserne(ecran,&caserne[i],map,&tilesetsMap,( (ecran->w/tilesetsMap.infoImage[0].image->w/2)+i*ECART_BASE_CASERNE+ECART_CASERNE_CASERNE));
         iniOtage(ecran,&(Otage[i]),map,&tilesetsMap,caserne[i].image[IMAGE1].position.x);
     }
     /*initialisation du sprite Otage pour la base et la file par défaut a 0 car le joueur doit
@@ -132,11 +146,11 @@ void jeu (SDL_Surface *ecran)
         else
         {
             tir(&helico);
-            decallement_image_map_hauteurPixel(&helico,&tilesetsMap,helico.imageUtilise.tir.positionTir.y,helico.imageUtilise.tir.positionTir.x,positionMap,helico.imageUtilise.tir.image);
+            decallement_image_map_hauteurPixel(&helico,&tilesetsMap,helico.imageUtilise.tir.positionTir.y,helico.imageUtilise.tir.positionTir.x,positionMap,helico.imageUtilise.tir.image[IMAGE1]);
         }
         //-------------FIN PARTIE TIR----------------
 
-        //Gestion des colisions
+        //Gestion des colisions tir
         GestionColision(&helico,map,&tilesetsMap,positionMap);
         //On blitte les animations de l'hélico en fonction si l'hélico est atérie ou pas
         if(0==atterrissageHelico(&helico,map,&tilesetsMap,positionMap))
@@ -151,13 +165,13 @@ void jeu (SDL_Surface *ecran)
         //-------------animation ennemies---------
         if(tank.vie>0)
         {
-            deplacementTank(&tank,positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[3]));
-            tank.imageUtilise.numeroImage=animationSprite(tank.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[2],&tank,&tilesetsMap,positionMap);
+            deplacementTank(&tank,positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[13]));
+            tank.imageUtilise.numeroImage=animationSprite(tank.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[12],&tank,&tilesetsMap,positionMap);
             //vérifie si le tank tir
             if(tank.imageUtilise.tir.actionEnCour==0)
             {
                 //Si l'utilisateur tir, on calcullera la trajectoire
-                calculTrajectoireTank(&tank,&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[4]));
+                calculTrajectoireTank(&tank,&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[14]));
             }
             //Si l'action est en cour, on blitte le tir enfonction de l'équation
             else
@@ -167,9 +181,33 @@ void jeu (SDL_Surface *ecran)
                     tir(&tank);
                     tempsJeu.tempsPrecedent[16]=tempsJeu.tempsActuel;
                 }
-                decallement_image_map_hauteurPixel(&tank,&tilesetsMap,tank.imageUtilise.tir.positionTir.y,tank.imageUtilise.tir.positionTir.x,positionMap,tank.imageUtilise.tir.image);
+                decallement_image_map_hauteurPixel(&tank,&tilesetsMap,tank.imageUtilise.tir.positionTir.y,tank.imageUtilise.tir.positionTir.x,positionMap,tank.imageUtilise.tir.image[IMAGE1]);
             }
             Gestion_Vie_sprite(&tank,&helico,&tilesetsMap);
+        }
+
+        if(avion.vie>0)
+        {
+            deplacementAvion(&avion,&helico,positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[26]));
+            avion.imageUtilise.numeroImage=animationSprite(avion.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[25],&avion,&tilesetsMap,positionMap);
+            //vérifie si le tank tir
+            if(avion.imageUtilise.tir.actionEnCour==0)
+            {
+                //Si l'utilisateur tir, on calcullera la trajectoire
+                calculTrajectoireAvion(&avion,&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[27]));
+            }
+            //Si l'action est en cour, on blitte le tir enfonction de l'équation
+            else
+            {
+                if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[28]+1000/VITESSE_TIR_ENNEMIE) )
+                {
+                    tir(&avion);
+                    tempsJeu.tempsPrecedent[28]=tempsJeu.tempsActuel;
+                }
+                //decallement_image_map_hauteurPixel(&avion,&tilesetsMap,avion.imageUtilise.tir.positionTir.y,avion.imageUtilise.tir.positionTir.x,positionMap,avion.imageUtilise.tir.image[IMAGE1]);
+                animationTir(&avion,&tilesetsMap,positionMap);
+            }
+            Gestion_Vie_sprite(&avion,&helico,&tilesetsMap);
         }
         //------------------------------
 
@@ -191,7 +229,7 @@ void jeu (SDL_Surface *ecran)
                 if(Otage[i].nbOtage>0)
                 {
                     //concerne les otages
-                    deplacementOtageVersHelico(&Otage[i],&helico,map,&tilesetsMap,positionMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[nbCaserne+i]) );
+                    deplacementOtageVersHelico(&Otage[i],&helico,&bariere,map,&tilesetsMap,positionMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[nbCaserne+i]) );
                     Otage[i].strucSprite.imageUtilise.numeroImage=animationSprite(Otage[i].strucSprite.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[nbCaserne+i],&Otage[i].strucSprite,&tilesetsMap,positionMap);
                     //Si l'otage se fait attaqué par un ennemie ou l'hélico
                     Gestion_Vie_sprite(&(Otage[i].strucSprite),&helico,&tilesetsMap);
@@ -228,14 +266,12 @@ void jeu (SDL_Surface *ecran)
     for(i=0;i<=IMAGE4;i++)
     {
         SDL_FreeSurface(helico.image[i].image);
-    }
-    SDL_FreeSurface(helico.imageUtilise.tir.image);
-
-    for(i=0;i<=IMAGE4;i++)
-    {
         SDL_FreeSurface(tank.image[i].image);
+        SDL_FreeSurface(avion.image[i].image);
+        SDL_FreeSurface(avion.imageUtilise.tir.image[i]);
     }
-    SDL_FreeSurface(tank.imageUtilise.tir.image);
+    SDL_FreeSurface(helico.imageUtilise.tir.image[IMAGE1]);
+    SDL_FreeSurface(tank.imageUtilise.tir.image[IMAGE1]);
 
     for(i=0;i<nbCaserne || i<NOMBRE_MAX_CASERNE;i++)
     {

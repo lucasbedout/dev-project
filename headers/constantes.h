@@ -12,6 +12,9 @@ Date de dernière modification : 05/04/2013
 #ifndef CONSTANTES_H_INCLUDED
 #define CONSTANTES_H_INCLUDED
 
+//Activé ou non le mode designer
+#define MODE_DESIGNER 1
+
 //--------------------NOM FICHIER ECRAN/MAP--------------
 #define NOM_FICHIER_MENU "img/MenuEcran.png"
 #define NOM_FICHIER_VICTOIRE "img/MenuResult/Victoire.png"
@@ -36,6 +39,18 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_TANK3 "img/Ennemie/Tank/tank3.png"
 #define NOM_FICHIER_TANK4 "img/Ennemie/Tank/tank4.png"
 #define NOM_FICHIER_TIR_TANK "img/Ennemie/Tank/tirTank.png"
+//---------------------------------------------------------
+
+//-----------------NOM FICHIER AVION----------------------
+#define NOM_FICHIER_AVION "img/Ennemie/Avion/Avion.png"
+#define NOM_FICHIER_AVION2 "img/Ennemie/Avion/Avion2.png"
+#define NOM_FICHIER_AVION3 "img/Ennemie/Avion/Avion3.png"
+#define NOM_FICHIER_AVION4 "img/Ennemie/Avion/Avion4.png"
+
+#define NOM_FICHIER_TIR_AVION "img/Ennemie/Avion/roquette1.png"
+#define NOM_FICHIER_TIR_AVION2 "img/Ennemie/Avion/roquette2.png"
+#define NOM_FICHIER_TIR_AVION3 "img/Ennemie/Avion/roquette3.png"
+#define NOM_FICHIER_TIR_AVION4 "img/Ennemie/Avion/roquette4.png"
 //---------------------------------------------------------
 
 //-----------------NOM FICHIER CASERNE--------------------
@@ -63,10 +78,6 @@ Date de dernière modification : 05/04/2013
 #define LARGEUR 800
 #define HAUTEUR 600
 //---------------------------------------------------------
-
-//----------------------TILESET------------------------------
-#define NB_TILESETS 3
-//-----------------------------------------------------------
 
 //----------------------NOMBRE DE SPRITE---------------------
 #define NOMBRE_TANK 3
@@ -106,13 +117,15 @@ struct temps
 typedef struct tirSprite tirSprite;
 struct tirSprite
 {
-    SDL_Surface *image;
+    SDL_Surface *image[10];
     SDL_Rect positionTir;
     SDL_Rect cibleTir;
     int actionEnCour;
     int signeEquation;
     double coefDirecteur;
     double coefIndice;
+    int directionTir;
+    int numeroImage;
 
 };
 
@@ -143,10 +156,19 @@ struct sprite
     int vie;
 };
 
+typedef struct imageTileset imageTileset;
+struct imageTileset
+{
+    SDL_Surface *image;
+    char nom[50];
+    char cheminImage[260];
+};
+
 typedef struct tilesets tilesets;
 struct tilesets
 {
-    SDL_Surface *image[10];
+    imageTileset    infoImage[10];
+    int             nbTilesets;
 };
 
 typedef struct otage otage;

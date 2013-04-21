@@ -14,6 +14,8 @@ Date de dernière modification : 26/03/2013
 
 //Permet d'animé le sprite
 int animationSprite(int image,int tempsActu,int tempsPrece,sprite *spriteAnime,tilesets *tilesetsMap,int positionMap);
+//Permet d'animé le tir
+void animationTir (sprite *spriteAnime,tilesets *tilesetsMap,int positionMap);
 //permet de blitter le tir du sprite en fonction de la trajectoire
 void tir(sprite *typeSprite);
 //gerre la vie d'un sprite

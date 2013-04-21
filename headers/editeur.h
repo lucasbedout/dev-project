@@ -37,7 +37,7 @@ int** declaration_tableau_map(SDL_Surface *ecran,tilesets imageMap);
 //initialise la map en mettant que des tilesets ciel
 int** initilisationMap(int** map,int n,int m);
 //permet de selectionner le tileset ou de sortir du programme
-void selection(int* continuer,SDL_Event *even,int *typeImage,int *molette);
+void selection(int* continuer,SDL_Event *even,int *typeImage,int *molette,int imageMax);
 //Blitte la surface selectionner au niveau du curseur
 void surface_map (SDL_Event *even,int typeImage,tilesets tilesetsMap,SDL_Surface *ecran,SDL_Rect *position);
 //colle la surface a la map

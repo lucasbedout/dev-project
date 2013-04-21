@@ -12,14 +12,18 @@ Date de dernière modification : 26/03/2013
 #ifndef MAP_H_INCLUDED
 #define MAP_H_INCLUDED
 
+#if MODE_DESIGNER==1
+int chargTileAuto(char string[],tilesets *strucTile);
+#endif
+
 //Déclare tout les  tilesets
 void declaration_tilesets(tilesets *tilesetsMap);
 //Remplie automatiquement la map ( map statique et prédéfinie )
-int** map_remplie(SDL_Surface *ecran);
+int** map_remplie(SDL_Surface *ecran,tilesets tilesetMap);
 //Calcul la taille de la map si le fichier map est présent
 int taille_map();
 //Charge la map si le fichier map est présent
-int** chargement_map(SDL_Surface *ecran);
+int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap);
 //Affiche la map
 void affiche_map(int **map,SDL_Surface *ecran,tilesets imageMap,int y);
 //libére la mémoire allouer par les tilesets

@@ -52,7 +52,7 @@ void iniCaserne(SDL_Surface *ecran,sprite *caserne,int** map,tilesets* tilesetsM
 
     //initialisation des position du caserne
     caserne->image[IMAGE1].position.x=positionX;
-    caserne->image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,(positionX+caserne->image[IMAGE1].image->w/tilesetsMap->image[0]->w) )-caserne->image[IMAGE1].image->h;
+    caserne->image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,(positionX+caserne->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )-caserne->image[IMAGE1].image->h;
 
     //vie du caserne
     caserne->vie=VIE_CASERNE;
@@ -109,7 +109,7 @@ void iniOtage(SDL_Surface *ecran,otage *Otage,int** map,tilesets* tilesetsMap,in
     Otage->strucSprite.image[IMAGE1].position.y=0;
 
     Otage->strucSprite.image[IMAGE1].position.x=positionX;
-    Otage->strucSprite.image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,(positionX+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w) )-Otage->strucSprite.image[IMAGE1].image->h;
+    Otage->strucSprite.image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,(positionX+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )-Otage->strucSprite.image[IMAGE1].image->h;
 
     //vie du tank
     Otage->strucSprite.vie=VIE_OTAGE;
@@ -127,25 +127,25 @@ void iniOtage(SDL_Surface *ecran,otage *Otage,int** map,tilesets* tilesetsMap,in
     Otage->file=1;
 }
 
-void deplacementOtageVersHelico(otage *Otage,sprite *helico,int** map,tilesets *tilesetsMap,int positionMap,int tempsActu,int *tempsOtage)
+void deplacementOtageVersHelico(otage *Otage,sprite *helico,sprite *bariere,int** map,tilesets *tilesetsMap,int positionMap,int tempsActu,int *tempsOtage)
 {
     //création de variable pour simplifier la lecture et réduire la longueur de la condition
     int moitierMap=0,positionOtageX=0;
 
-    moitierMap=helico->imageUtilise.positionEcran->w/tilesetsMap->image[IMAGE1]->w/2;
+    moitierMap=helico->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w/2;
     positionOtageX=Otage->strucSprite.image[IMAGE1].position.x;
 
     if( tempsActu>((*tempsOtage)+(200/VITESSE_OTAGE))  )
     {
         //On vérifie si l'hélico est attérie près de l'otage
-        if( ( (moitierMap*-1)<(positionMap-positionOtageX) && (positionMap-positionOtageX)<moitierMap ) && (atterrissageHelico(helico,map,tilesetsMap,positionMap)==1) )
+        if( ( (moitierMap*-1)<(positionMap-positionOtageX) && (positionMap-positionOtageX)<moitierMap ) && (atterrissageHelico(helico,map,tilesetsMap,positionMap)==1) && 0==colisionBariere(&Otage->strucSprite,bariere,tilesetsMap) )
         {
             if( (positionMap>Otage->strucSprite.image[IMAGE1].position.x) )
             {
                 Otage->strucSprite.image[IMAGE1].position.x++;
                 Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
                                                             hauteur_sol_max(map,tilesetsMap,
-                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w);
+                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
                 Otage->strucSprite.imageUtilise.direction=DROITE;
             }
             else if( (positionMap<Otage->strucSprite.image[IMAGE1].position.x) )
@@ -153,9 +153,16 @@ void deplacementOtageVersHelico(otage *Otage,sprite *helico,int** map,tilesets *
                 Otage->strucSprite.image[IMAGE1].position.x--;
                 Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
                                                             hauteur_sol_max(map,tilesetsMap,
-                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w);
+                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
                 Otage->strucSprite.imageUtilise.direction=GAUCHE;
             }
+        }
+        else if(0!=colisionBariere(&Otage->strucSprite,bariere,tilesetsMap))
+        {
+            Otage->strucSprite.image[IMAGE1].position.x+=colisionBariere(&Otage->strucSprite,bariere,tilesetsMap);
+            Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
+                                                            hauteur_sol_max(map,tilesetsMap,
+                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
         }
         else
         {
@@ -187,7 +194,8 @@ void gestionFileOtage(otage *Otage,sprite *helico,int positionCaserneX,int posit
     {
         Otage->strucSprite.image[IMAGE1].position.x=positionCaserneX;
         Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-
-                                                    hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,positionCaserneX,(positionCaserneX+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w) )-Otage->strucSprite.image[IMAGE1].image->h;
+                                                    hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,positionCaserneX,(positionCaserneX+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )
+                                                                    -Otage->strucSprite.image[IMAGE1].image->h;
         Otage->file=1;
     }
 }
@@ -201,7 +209,7 @@ void deplacementOtageVersBase(otage *Otage,sprite *helico,sprite *base,int** map
             Otage->strucSprite.image[IMAGE1].position.x++;
             Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
                                                         hauteur_sol_max(map,tilesetsMap,
-                                                        Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w);
+                                                        Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
             Otage->strucSprite.imageUtilise.direction=DROITE;
         }
         else if( (base->image[IMAGE1].position.x<Otage->strucSprite.image[IMAGE1].position.x) )
@@ -209,7 +217,7 @@ void deplacementOtageVersBase(otage *Otage,sprite *helico,sprite *base,int** map
             Otage->strucSprite.image[IMAGE1].position.x--;
             Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
                                                         hauteur_sol_max(map,tilesetsMap,
-                                                        Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w);
+                                                        Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
             Otage->strucSprite.imageUtilise.direction=GAUCHE;
         }
         else
@@ -239,9 +247,9 @@ void iniBase(SDL_Surface *ecran,sprite *base,int** map,tilesets* tilesetsMap)
 
     //initialisation des position du base
     //On place la base vers le debus de la map sans possibilité a l'hélicoptère d'être coller ou que la base soit coller au bors de la fenetre
-    int positionX=( (ecran->w-base->image[IMAGE1].image->w)/tilesetsMap->image[IMAGE1]->w)/2*-1;
+    int positionX=( (ecran->w-base->image[IMAGE1].image->w)/tilesetsMap->infoImage[IMAGE1].image->w)/2*-1;
     base->image[IMAGE1].position.x=positionX;
-    base->image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,(positionX+base->image[IMAGE1].image->w/tilesetsMap->image[0]->w) )-base->image[IMAGE1].image->h;
+    base->image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,(positionX+base->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )-base->image[IMAGE1].image->h;
 
     //on attribue les propriété de l'écran a la structure base
     base->imageUtilise.positionEcran=ecran;
@@ -267,7 +275,7 @@ void iniBariere(SDL_Surface *ecran,sprite *bariere,int** map,tilesets* tilesetsM
     bariere->imageUtilise.positionEcran=ecran;
 
     //initialisation des position de la bariere
-    int positionX=saveZone(bariere,tilesetsMap)-bariere->image[IMAGE1].image->w/tilesetsMap->image[IMAGE1]->w-1;
+    int positionX=saveZone(bariere,tilesetsMap)-bariere->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w-1;
     bariere->image[IMAGE1].position.x=positionX;
     bariere->image[IMAGE1].position.y=ecran->h-hauteur_sol_max(map,tilesetsMap,ecran,positionX,saveZone(bariere,tilesetsMap)-1  )-bariere->image[IMAGE1].image->h;
 
@@ -275,8 +283,22 @@ void iniBariere(SDL_Surface *ecran,sprite *bariere,int** map,tilesets* tilesetsM
     bariere->imageUtilise.numeroImage=IMAGE1;
 }
 
-int colisionBariere()
+int colisionBariere(sprite *typeSprite,sprite *bariere,tilesets* tilesetsMap)
 {
-    //code ici
+    //On regarde si le sprite touche la partie gauche ou droite de la barière
+    if(typeSprite->image[IMAGE1].position.x>=saveZone(bariere,tilesetsMap)-bariere->image[IMAGE1].image->w/tilesetsMap->infoImage[IMAGE1].image->w-1 &&
+        typeSprite->image[IMAGE1].position.x<=saveZone(bariere,tilesetsMap))
+    {
+        if( typeSprite->image[IMAGE1].position.x<=saveZone(bariere,tilesetsMap) )
+            return 1;
+        else
+            return -1;
+    }
+
+    //On vérifie si le sprite touche la partie haute de la barière
+    else if(typeSprite->image[IMAGE1].position.y+1>=bariere->image[IMAGE1].position.y)
+        return 1;
+    else
+        return 0;
 }
 //------------------------------------------------------------------------

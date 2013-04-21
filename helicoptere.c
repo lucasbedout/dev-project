@@ -65,11 +65,11 @@ void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
     helico->image[IMAGE1].position.y=((*ecran).h/2)-helico->image[IMAGE1].image->h/2;
 
     //chargement de l'image du tir associer a l'hélicoptère
-    helico->imageUtilise.tir.image=NULL;
-    helico->imageUtilise.tir.image=IMG_Load(NOM_FICHIER_TIR_HELICO);
+    helico->imageUtilise.tir.image[IMAGE1]=NULL;
+    helico->imageUtilise.tir.image[IMAGE1]=IMG_Load(NOM_FICHIER_TIR_HELICO);
 
     //verification que l'image soit bien charger
-    if(helico->imageUtilise.tir.image==NULL)
+    if(helico->imageUtilise.tir.image[IMAGE1]==NULL)
     {
         erreur_image(NOM_FICHIER_TIR_HELICO);
     }
@@ -182,7 +182,7 @@ void calculTrajectoireTirHelico(SDL_Event* even,sprite *helico,int positionMap,t
                 {
                     case SDL_BUTTON_LEFT:
                         //on prends la position de la cible en prenant la colonne ( unité de valeur : tileset ) et les y en pixel
-                        helico->imageUtilise.tir.cibleTir.x=((even->button.x)/tilesetsMap->image[0]->w)+positionMap-((helico->imageUtilise.positionEcran->w/tilesetsMap->image[0]->w)/2);
+                        helico->imageUtilise.tir.cibleTir.x=((even->button.x)/tilesetsMap->infoImage[0].image->w)+positionMap-((helico->imageUtilise.positionEcran->w/tilesetsMap->infoImage[0].image->w)/2);
                         helico->imageUtilise.tir.cibleTir.y=even->button.y;
                         //la position se fait a partir de la position de la map et on place le tir juste en dessosu de l'hélico
                         helico->imageUtilise.tir.positionTir.x=positionMap;
@@ -199,7 +199,7 @@ void calculTrajectoireTirHelico(SDL_Event* even,sprite *helico,int positionMap,t
 void GestionColision(sprite *helico,int** map,tilesets *tilesetsMap,int positionActu)
 {
     //Taille de l'helico par rapport a la taille des tilesets, le résultat est
-    int tailleHelico=helico->image[IMAGE1].image->w/tilesetsMap->image[IMAGE1]->w;
+    int tailleHelico=helico->image[IMAGE1].image->w/tilesetsMap->infoImage[IMAGE1].image->w;
 
     //On regarde si l'hélico ne sort pas du cadre de la fenetre
     if((helico->image[IMAGE1].position.x+helico->image[IMAGE1].position.w)>(helico->imageUtilise.positionEcran->w))
@@ -216,7 +216,7 @@ void GestionColision(sprite *helico,int** map,tilesets *tilesetsMap,int position
 int atterrissageHelico(sprite *helico,int** map,tilesets *tilesetsMap,int positionActu)
 {
     //Taille de l'helico par rapport a la taille des tilesets, le résultat est
-    int tailleHelico=helico->image[IMAGE1].image->w/tilesetsMap->image[IMAGE1]->w;
+    int tailleHelico=helico->image[IMAGE1].image->w/tilesetsMap->infoImage[IMAGE1].image->w;
 
     //atterie (le -1 est la pour arrondir le résultat )
     if( (helico->image[IMAGE1].position.y+helico->image[IMAGE1].image->h) >=

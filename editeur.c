@@ -26,7 +26,12 @@ void editeur (SDL_Surface *ecran)
     tilesets tilesetsMap;
     int **map=NULL;
 
+    #if MODE_DESIGNER==1
+    chargTileAuto("img/Tilesets",&tilesetsMap);
+    #else
     declaration_tilesets(&tilesetsMap);
+    #endif
+
     map=declaration_tableau_map(ecran,tilesetsMap);
 
     int positionMap=0;
@@ -51,7 +56,7 @@ void editeur (SDL_Surface *ecran)
 
     while(continuer)
     {
-        selection(&continuer,&even,&typeImage,&molette);
+        selection(&continuer,&even,&typeImage,&molette,tilesetsMap.nbTilesets);
 
         affiche_map_editeur(map,ecran,tilesetsMap,positionActu,liste);
         surface_map (&even,typeImage,tilesetsMap,ecran,&positionSouri);
@@ -80,8 +85,8 @@ int** declaration_tableau_map(SDL_Surface *ecran,tilesets imageMap)
     int** map=NULL;
     int n=0,m=0,i=0;
 
-    n=ecran->h/imageMap.image[0]->h;
-    m=ecran->w/imageMap.image[0]->w;
+    n=ecran->h/imageMap.infoImage[0].image->h;
+    m=ecran->w/imageMap.infoImage[0].image->w;
 
     //-------------------ALLOCATION TABLEAU DYNAMIQUE 2D--------------
 
@@ -134,12 +139,12 @@ int** initilisationMap(int** map,int n,int m)
     return map;
 }
 
-void selection(int* continuer,SDL_Event *even,int *typeImage,int *molette)
+void selection(int* continuer,SDL_Event *even,int *typeImage,int *molette,int imageMax)
 {
     SDL_PollEvent(even);
 
-    //Il y a 3 images de tilesets donc le max est 3-1=2 ( car le numero de l'image commence a 0 )
-    const int imageMax=2;
+    //on retire un tileset car le tableau commence a 0 et pas a 1
+    imageMax--;
 
     switch(even->type)
     {
@@ -219,7 +224,7 @@ void surface_map (SDL_Event *even,int typeImage,tilesets tilesetsMap,SDL_Surface
         position->y=even->motion.y;
     }
 
-    SDL_BlitSurface(tilesetsMap.image[typeImage],NULL,ecran,position);
+    SDL_BlitSurface(tilesetsMap.infoImage[typeImage].image,NULL,ecran,position);
 }
 
 int** coller_surface(int typeImage,tilesets tilesetsMap,int** map,SDL_Rect *position,SDL_Event *even,Liste *liste,int *positionActu,SDL_Surface *ecran)
@@ -231,17 +236,17 @@ int** coller_surface(int typeImage,tilesets tilesetsMap,int** map,SDL_Rect *posi
        //on blitte la surface en fonction de la map si aucune liste chainnée est présente
        if(*positionActu==0)
        {
-            i=position->y/tilesetsMap.image[0]->h;
-            j=position->x/tilesetsMap.image[0]->w;
+            i=position->y/tilesetsMap.infoImage[0].image->h;
+            j=position->x/tilesetsMap.infoImage[0].image->w;
 
             map[i][j]=typeImage;
        }
        //sinon on blitte la surface en prenant en compte les listes chaînées
        else
        {
-           i=position->y/tilesetsMap.image[0]->h;
-           j=position->x/tilesetsMap.image[0]->w;
-           m=ecran->w/tilesetsMap.image[0]->w;
+           i=position->y/tilesetsMap.infoImage[0].image->h;
+           j=position->x/tilesetsMap.infoImage[0].image->w;
+           m=ecran->w/tilesetsMap.infoImage[0].image->w;
 
             //Si on blitte encore sur la map, on blitte les surfaces en prenant en compte les listes chainnées sur l'écran
            if( 0>(j+(*positionActu)-m) )
@@ -285,8 +290,8 @@ void save_map(int** map,SDL_Surface *ecran,tilesets imageMap,SDL_Event *even,Lis
             int i=0,j=0,n=0,m=0;
             Element* cursor=liste->premier;
 
-            n=ecran->h/imageMap.image[0]->h;
-            m=ecran->w/imageMap.image[0]->w;
+            n=ecran->h/imageMap.infoImage[0].image->h;
+            m=ecran->w/imageMap.infoImage[0].image->w;
 
             //parcour de la map
             for(i=0;i<n;i++)
@@ -435,8 +440,8 @@ void affiche_map_editeur(int **map,SDL_Surface *ecran,tilesets imageMap,int y,Li
 
 
     //on définie la largeur/hauteur a blitter celon la fenetre
-    n=ecran->h/imageMap.image[0]->h;
-    m=ecran->w/imageMap.image[0]->w;
+    n=ecran->h/imageMap.infoImage[0].image->h;
+    m=ecran->w/imageMap.infoImage[0].image->w;
 
     //on blitte si on fait appelle a la map
     if(y<m)
@@ -446,20 +451,20 @@ void affiche_map_editeur(int **map,SDL_Surface *ecran,tilesets imageMap,int y,Li
             for(j=y;j<m;j++)
             {
                 //blitte la surface qui correspond a la partie de la map
-                if(map[i][j]<NB_TILESETS)
+                if(map[i][j]<imageMap.nbTilesets)
                 {
-                    position.y=i*(imageMap.image[map[i][j]]->h);
-                    position.x=(j-y)*(imageMap.image[map[i][j]]->w);
+                    position.y=i*(imageMap.infoImage[map[i][j]].image->h);
+                    position.x=(j-y)*(imageMap.infoImage[map[i][j]].image->w);
 
-                    SDL_BlitSurface(imageMap.image[map[i][j]],NULL,ecran,&position);
+                    SDL_BlitSurface(imageMap.infoImage[map[i][j]].image,NULL,ecran,&position);
                 }
                 //on blitte le ciel si le numéro de l'image est incorrect
                 else
                 {
-                    position.y=i*(imageMap.image[1]->h);
-                    position.x=(j-y)*(imageMap.image[1]->w);
+                    position.y=i*(imageMap.infoImage[1].image->h);
+                    position.x=(j-y)*(imageMap.infoImage[1].image->w);
 
-                    SDL_BlitSurface(imageMap.image[1],NULL,ecran,&position);
+                    SDL_BlitSurface(imageMap.infoImage[1].image,NULL,ecran,&position);
                 }
 
             }
@@ -504,20 +509,20 @@ void affiche_map_editeur(int **map,SDL_Surface *ecran,tilesets imageMap,int y,Li
                     //boucle qui parcour les colonnes
                     for(z=decallement;z<m;z++)
                     {
-                        if(actuel->colonne[i]<NB_TILESETS)
+                        if(actuel->colonne[i]<imageMap.nbTilesets)
                         {
-                            position.y=i*(imageMap.image[actuel->colonne[i]]->h);
-                            position.x=z*(imageMap.image[actuel->colonne[i]]->w);
+                            position.y=i*(imageMap.infoImage[actuel->colonne[i]].image->h);
+                            position.x=z*(imageMap.infoImage[actuel->colonne[i]].image->w);
 
-                            SDL_BlitSurface(imageMap.image[actuel->colonne[i]],NULL,ecran,&position);
+                            SDL_BlitSurface(imageMap.infoImage[actuel->colonne[i]].image,NULL,ecran,&position);
                         }
                         //on blitte le ciel si le numéro de l'image est incorrect
                         else
                         {
-                            position.y=i*(imageMap.image[1]->h);
-                            position.x=z*(imageMap.image[1]->w);
+                            position.y=i*(imageMap.infoImage[1].image->h);
+                            position.x=z*(imageMap.infoImage[1].image->w);
 
-                            SDL_BlitSurface(imageMap.image[1],NULL,ecran,&position);
+                            SDL_BlitSurface(imageMap.infoImage[1].image,NULL,ecran,&position);
                         }
 
 

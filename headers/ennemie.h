@@ -22,8 +22,12 @@ void calculTrajectoireTank(sprite *tank,sprite *helico,int positionMap,tilesets 
 //-------------------------------------------------------------------------------------
 
 //---------------------------------PARTIE AVION----------------------------------------
-//Initialise le sprite Avion
+//Initialise le sprite avion
 void iniAvion(SDL_Surface *ecran,sprite *avion);
+//Permet de déplacé l'avion
+void deplacementAvion(sprite *avion,sprite *helico,int positionMap,tilesets *tilesetsMap,int** map,int tempsActu,int *tempsAvion);
+//Calcul la trajectoire de l'avion de façon linéaire
+void calculTrajectoireAvion(sprite *avion,sprite *helico,int positionMap,tilesets *tilesetsMap,int tempsActu,int *tempsPrece);
 //-------------------------------------------------------------------------------------
 
 //---------------------------------PARTIE SOUCOUPE-------------------------------------

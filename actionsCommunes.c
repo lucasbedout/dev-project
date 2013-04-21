@@ -29,7 +29,7 @@ int animationSprite(int image,int tempsActu,int tempsPrece,sprite *spriteAnime,t
     if(spriteAnime->imageUtilise.direction==GAUCHE)
     {
         //si l'image 1 est blitter et que le temps est supérieur a 50ms on blitte l'image 2
-        if( ( (image==IMAGE1) && ((tempsActu-tempsPrece)>50) ) || image==IMAGE3 || image==IMAGE4 )
+        if( (image!=IMAGE2) && ((tempsActu-tempsPrece)>50) )
         {
             decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE2].image);
 
@@ -45,12 +45,12 @@ int animationSprite(int image,int tempsActu,int tempsPrece,sprite *spriteAnime,t
     else if(spriteAnime->imageUtilise.direction==DROITE)
     {
         //si l'image 3 est blitter et que le temps est supérieur a 50ms on blitte l'image 4
-        if( ( (image==IMAGE3) && ((tempsActu-tempsPrece)>50) ) || image==IMAGE1 || image==IMAGE2 )
+        if( (image!=IMAGE4) && ((tempsActu-tempsPrece)>50) )
         {
             decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE4].image);
             return IMAGE4;
         }
-        //même logique sauf qu'on veut blitter l'image 1
+        //même logique sauf qu'on veut blitter l'image 3
         else if ( (image==IMAGE4) && ((tempsActu-tempsPrece)>50) );
         {
             decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE3].image);
@@ -61,6 +61,41 @@ int animationSprite(int image,int tempsActu,int tempsPrece,sprite *spriteAnime,t
     {
         decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE5].image);
         return IMAGE5;
+    }
+}
+
+void animationTir (sprite *spriteAnime,tilesets *tilesetsMap,int positionMap)
+{
+    if(spriteAnime->imageUtilise.tir.directionTir==GAUCHE)
+    {
+        //si l'image 1 est blitter et que le temps est supérieur a 50ms on blitte l'image 2
+        if(  (spriteAnime->imageUtilise.tir.numeroImage!=IMAGE2)  )
+        {
+            decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->imageUtilise.tir.positionTir.y,spriteAnime->imageUtilise.tir.positionTir.x,positionMap,spriteAnime->imageUtilise.tir.image[IMAGE2]);
+
+            spriteAnime->imageUtilise.tir.numeroImage=IMAGE2;
+        }
+        //même logique sauf qu'on veut blitter l'image 1
+        else if ( (spriteAnime->imageUtilise.tir.numeroImage==IMAGE2) );
+        {
+            decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->imageUtilise.tir.positionTir.y,spriteAnime->imageUtilise.tir.positionTir.x,positionMap,spriteAnime->imageUtilise.tir.image[IMAGE1]);
+            spriteAnime->imageUtilise.tir.numeroImage=IMAGE1;
+        }
+    }
+    else if(spriteAnime->imageUtilise.tir.directionTir==DROITE)
+    {
+        //si l'image 3 est blitter et que le temps est supérieur a 50ms on blitte l'image 4
+        if(  (spriteAnime->imageUtilise.tir.numeroImage!=IMAGE4)   )
+        {
+            decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->imageUtilise.tir.positionTir.y,spriteAnime->imageUtilise.tir.positionTir.x,positionMap,spriteAnime->imageUtilise.tir.image[IMAGE4]);
+            spriteAnime->imageUtilise.tir.numeroImage=IMAGE4;
+        }
+        //même logique sauf qu'on veut blitter l'image 3
+        else if ( (spriteAnime->imageUtilise.tir.numeroImage==IMAGE4) );
+        {
+            decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->imageUtilise.tir.positionTir.y,spriteAnime->imageUtilise.tir.positionTir.x,positionMap,spriteAnime->imageUtilise.tir.image[IMAGE3]);
+            spriteAnime->imageUtilise.tir.numeroImage=IMAGE3;
+        }
     }
 }
 
@@ -108,24 +143,28 @@ void tir(sprite *typeSprite)
                     typeSprite->imageUtilise.tir.positionTir.x-=VITESSE_PROJECTILE;
                     typeSprite->imageUtilise.tir.positionTir.y=(typeSprite->imageUtilise.tir.coefDirecteur)*(typeSprite->imageUtilise.tir.positionTir.x)+(typeSprite->imageUtilise.tir.coefIndice);
                 }
+
+                typeSprite->imageUtilise.tir.directionTir=GAUCHE;
             }
             //Si l'équation est de type positive
             else if(typeSprite->imageUtilise.tir.signeEquation==positif)
             {
                 //Si la position dépasse la cible a cause du PAS de la vitesse
                 if( ( typeSprite->imageUtilise.tir.positionTir.x+VITESSE_PROJECTILE)>typeSprite->imageUtilise.tir.cibleTir.x )
-            {
-                //Alors on attribue les coordonnées de la cible a la position du tir
-                typeSprite->imageUtilise.tir.positionTir.x=typeSprite->imageUtilise.tir.cibleTir.x;
-                typeSprite->imageUtilise.tir.positionTir.y=typeSprite->imageUtilise.tir.cibleTir.y;
+                {
+                    //Alors on attribue les coordonnées de la cible a la position du tir
+                    typeSprite->imageUtilise.tir.positionTir.x=typeSprite->imageUtilise.tir.cibleTir.x;
+                    typeSprite->imageUtilise.tir.positionTir.y=typeSprite->imageUtilise.tir.cibleTir.y;
+                }
+                //Sinon on calcul le x puis le y de l'équation y=ax+b
+                else
+                {
+                    typeSprite->imageUtilise.tir.positionTir.x+=VITESSE_PROJECTILE;
+                    typeSprite->imageUtilise.tir.positionTir.y=(typeSprite->imageUtilise.tir.coefDirecteur)*( typeSprite->imageUtilise.tir.positionTir.x)+(typeSprite->imageUtilise.tir.coefIndice);
+                }
+
+                typeSprite->imageUtilise.tir.directionTir=DROITE;
             }
-            //Sinon on calcul le x puis le y de l'équation y=ax+b
-            else
-            {
-                typeSprite->imageUtilise.tir.positionTir.x+=VITESSE_PROJECTILE;
-                typeSprite->imageUtilise.tir.positionTir.y=(typeSprite->imageUtilise.tir.coefDirecteur)*( typeSprite->imageUtilise.tir.positionTir.x)+(typeSprite->imageUtilise.tir.coefIndice);
-            }
-        }
     }
     //Sinon, si la position du tir et de la cible sont égaux alors l'action est fini
     else
@@ -149,11 +188,11 @@ void Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap)
     tirHelicoX=helico->imageUtilise.tir.positionTir.x;
     tirHelicoY=helico->imageUtilise.tir.positionTir.y;
 
-    tailleSpriteX=Sprite->image[IMAGE1].image->w/tilesetsMap->image[0]->w;
+    tailleSpriteX=Sprite->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w;
     tailleSpriteY=Sprite->image[IMAGE1].image->h;
 
-    tailleTirHelicoX=helico->imageUtilise.tir.image->w/tilesetsMap->image[0]->w;
-    tailleTirHelicoY=helico->imageUtilise.tir.image->h;
+    tailleTirHelicoX=helico->imageUtilise.tir.image[IMAGE1]->w/tilesetsMap->infoImage[0].image->w;
+    tailleTirHelicoY=helico->imageUtilise.tir.image[IMAGE1]->h;
 
     //regarde si dans un premier temps le tir du tank touche l'hélico puis regarde si le tir de l'avion touche l'hélico
     if( helico->imageUtilise.tir.actionEnCour==1 &&
@@ -179,11 +218,11 @@ int hotage_monte_helico(sprite *helico,otage *Otage, int** map,tilesets *tileset
     helicoX=positionActu;
     helicoY=helico->image[IMAGE1].position.y;
 
-    tailleOtageX=Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w;
+    tailleOtageX=Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w;
     tailleOtageY=Otage->strucSprite.image[IMAGE1].image->h;
 
     //la taille de l'hélico de l'image est divisé par deux car l'image de l'hélico est blité au centre de la fenetre
-    tailleHelicoX=(helico->image[IMAGE1].image->w/tilesetsMap->image[0]->w)/2;
+    tailleHelicoX=(helico->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w)/2;
     tailleHelicoY=helico->image[IMAGE1].image->h;
 
     //on regarde si l'hélico est attérie et si un otage "touche" l'hélico
@@ -211,7 +250,7 @@ void hotage_dessend_helico(int positionMap,int *nbOtageBord,int *nbOtageBase,ota
         Otage->file=1;
         Otage->strucSprite.image[IMAGE1].position.x=positionMap;
         Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-
-                                                    hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,positionMap,(positionMap+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w) )-Otage->strucSprite.image[IMAGE1].image->h;
+                                                    hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,positionMap,(positionMap+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )-Otage->strucSprite.image[IMAGE1].image->h;
 
     }
     //Si l'otage est rentrer dans la base
@@ -233,10 +272,10 @@ int hotage_rentre_base(sprite *base,otage *Otage, int** map,tilesets *tilesetsMa
     baseX=base->image[IMAGE1].position.x;
     baseY=base->image[IMAGE1].position.y;
 
-    tailleOtageX=Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->image[0]->w;
+    tailleOtageX=Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w;
     tailleOtageY=Otage->strucSprite.image[IMAGE1].image->h;
 
-    tailleBaseX=(base->image[IMAGE1].image->w/tilesetsMap->image[0]->w);
+    tailleBaseX=(base->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
     tailleBaseY=base->image[IMAGE1].image->h;
 
     //on regarde si l'otage "touche" la base
@@ -256,7 +295,7 @@ int hotage_rentre_base(sprite *base,otage *Otage, int** map,tilesets *tilesetsMa
 int saveZone(sprite *Sprite,tilesets *tilesetsMap)
 {
     int moitierMap=0;
-    moitierMap=Sprite->imageUtilise.positionEcran->w/tilesetsMap->image[IMAGE1]->w/2;
+    moitierMap=Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w/2;
 
     return moitierMap+1;
 }
