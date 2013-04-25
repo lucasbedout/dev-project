@@ -94,4 +94,5 @@ int main (int argc, char** argv)
     SDL_FreeSurface(Menu);
     SDL_Quit();
 
+    return 0;
 }

@@ -177,7 +177,7 @@ void tir(sprite *typeSprite)
     }
 }
 
-void Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap)
+void Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap,int tempsActu)
 {
     //Variable créer pour réduire le nombre de ligne et facilité la lecture de la condition suivante
     int spritePosX=0,spritePosY=0,tirHelicoX=0,tirHelicoY=0,tailleSpriteX=0,tailleSpriteY=0,tailleTirHelicoX=0,tailleTirHelicoY=0;
@@ -201,6 +201,8 @@ void Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap)
        {
            //on retire un point de vie
             Sprite->vie--;
+            //Si la vie est a 0, on indique la date de la mort
+            Sprite->tempsMort=tempsActu;
             //on indique que le tir est fini et on réinitialise le tir
             helico->imageUtilise.tir.actionEnCour=0;
             helico->imageUtilise.tir.signeEquation=0;
@@ -300,15 +302,30 @@ int saveZone(sprite *Sprite,tilesets *tilesetsMap)
     return moitierMap+1;
 }
 
-//----------------------FONCTION UTILISER PLUS TARD--------------------------------------
-int nbCaserneMap(int **map)
+int nbCaserneMap(sprite *Sprite,tilesets *tilesetsMap)
 {
-    int limiteMap=0,nbCaserne=0;
-    limiteMap=taille_map();
+    int nbcaserne=0,limiteMap=taille_map(),savZon=saveZone(Sprite,tilesetsMap),tailleCaserne=0;
 
-    nbCaserne=(limiteMap-ECART_BASE_CASERNE)/ECART_CASERNE_CASERNE;
+    tailleCaserne=Sprite->image[IMAGE1].image->w/tilesetsMap->infoImage[IMAGE1].image->w;
 
-    return nbCaserne;
+    if(limiteMap==0)
+        limiteMap=TAILLE_MAP_PREDEFINIE;
+
+    nbcaserne=(limiteMap-ECART_BASE_CASERNE-savZon-tailleCaserne)/ECART_CASERNE_CASERNE;
+
+    if(nbcaserne<NOMBRE_MAX_CASERNE)
+        return nbcaserne;
+    else
+        return NOMBRE_MAX_CASERNE;
+}
+
+int pourcentSavOtage(int nbOtageBord,int nbOtageBase,int nbCaserne)
+{
+    int prcntOtage=0;
+
+    prcntOtage=100*(nbOtageBord+nbOtageBase)/(nbCaserne*NB_OTAGE_PAR_CASERNE);
+
+    return prcntOtage;
 }
 
 //----------------------A VOIR BIEN PLUS TARD-------------------------------------------

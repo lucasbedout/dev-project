@@ -387,8 +387,8 @@ int hauteur_sol(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int j)
     for(i=0;(map[i][j+(m/2)]!=0) && (i<(n-1));i++);
 
     /*Si on arrive a la dernière ligne, pour évité d'acceder a une zone mémoire non allouer par le programme
-    on vérifie la dernière valeur de celle-ci. Si elle est différente du tilesets sol, on retourne la valeur
-    de la hauteur de la map pour indiquer qu'il n'y a pas de sol*/
+on vérifie la dernière valeur de celle-ci. Si elle est différente du tilesets sol, on retourne la valeur
+de la hauteur de la map pour indiquer qu'il n'y a pas de sol*/
     if(i==(n-1) && map[i][j+(m/2)]!=0 )
     {
         i=n;

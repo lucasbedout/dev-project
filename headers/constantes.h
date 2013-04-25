@@ -13,7 +13,7 @@ Date de dernière modification : 05/04/2013
 #define CONSTANTES_H_INCLUDED
 
 //Activé ou non le mode designer
-#define MODE_DESIGNER 1
+#define MODE_DESIGNER 0
 
 //--------------------NOM FICHIER ECRAN/MAP--------------
 #define NOM_FICHIER_MENU "img/MenuEcran.png"
@@ -23,6 +23,8 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_MAP_TERRE "img/Tilesets/terre.png"
 #define NOM_FICHIER_MAP_CIEL "img/Tilesets/ciel.png"
 #define NOM_FICHIER_MAP_ROUGE "img/Tilesets/scrolling.png"
+
+#define TAILLE_MAP_PREDEFINIE 50
 //-------------------------------------------------------
 
 //-----------------NOM FICHIER HELICO----------------------
@@ -51,6 +53,11 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_TIR_AVION2 "img/Ennemie/Avion/roquette2.png"
 #define NOM_FICHIER_TIR_AVION3 "img/Ennemie/Avion/roquette3.png"
 #define NOM_FICHIER_TIR_AVION4 "img/Ennemie/Avion/roquette4.png"
+//---------------------------------------------------------
+
+//-----------------NOM FICHIER SOUCOUPE----------------------
+#define NOM_FICHIER_SOUCOUPE "img/Ennemie/Soucoupe/Soucoupe1.png"
+#define NOM_FICHIER_SOUCOUPE2 "img/Ennemie/Soucoupe/Soucoupe2.png"
 //---------------------------------------------------------
 
 //-----------------NOM FICHIER CASERNE--------------------
@@ -88,20 +95,42 @@ Date de dernière modification : 05/04/2013
 #define NB_OTAGE_PAR_CASERNE 6
 //-----------------------------------------------------------
 
+//----------------------ORDRE D APARITION---------------------
+//Nombre entre 0 et 99. Plus le nombre est élevé et plus l'ennemie mettra du temps a venir dans le jeu
+#define IMPORTANCE_TANK 10
+#define IMPORTANCE_AVION 30
+#define IMPORTANCE_SOUCOUPE 50
+//-----------------------------------------------------------
+
+//----------------------TEMPS AVANT RESPAWN(en ms)-----------
+#define RESPAWN_SOUCOUPE 10000
+#define RESPAWN_TANK 5000
+#define RESPAWN_AVION 15000
+//-----------------------------------------------------------
+
 //----------------------VIE SPRITE---------------------------
 #define VIE_HELICO 3
 #define VIE_TANK 1
 #define VIE_AVION 2
-#define VIE_SOUCOUPE 1
+#define VIE_SOUCOUPE 3
 #define VIE_CASERNE 1
 #define VIE_OTAGE 1
 //-----------------------------------------------------------
+
+//----------------------TEMPS ECART TABLEAU TEMPS------------
+#define TMP_DECAL_TAB_TANK 4
+#define TMP_DECAL_TAB_AVION 4
+#define TMP_DECAL_TAB_SOUCOUPE 2
+//-----------------------------------------------------------
+
+//nombre total d'otage a sauvé dans le jeu
+#define NB_TOTAL_OTAGE NB_CASERNE*NB_OTAGE_PAR_CASERNE
 
 //Plus le nombre est élevé plus le tir est rapide
 #define VITESSE_TIR_ENNEMIE 15
 
 #define TEMPS_POSE 50
-#define TAILLE_TABLEAU_TEMPS 30
+#define TAILLE_TABLEAU_TEMPS 40
 
 enum {IMAGE1,IMAGE2,IMAGE3,IMAGE4,IMAGE5,IMAGE6,IMAGE7,IMAGE8,IMAGE9,IMAGE10};
 enum {GAUCHE,DROITE,BAS,HAUT,FACE};
@@ -147,13 +176,14 @@ struct imageActu
 
 };
 
-
+//Temps mort représente la date de mort du sprite dans le jeu
 typedef struct sprite sprite;
 struct sprite
 {
     numImage image[10];
     imageActu imageUtilise;
     int vie;
+    int tempsMort;
 };
 
 typedef struct imageTileset imageTileset;

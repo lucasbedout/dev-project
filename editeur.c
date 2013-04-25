@@ -88,6 +88,8 @@ int** declaration_tableau_map(SDL_Surface *ecran,tilesets imageMap)
     n=ecran->h/imageMap.infoImage[0].image->h;
     m=ecran->w/imageMap.infoImage[0].image->w;
 
+    test_valeur(ecran->h,"IMAGE");
+
     //-------------------ALLOCATION TABLEAU DYNAMIQUE 2D--------------
 
         //allocation dynamique a 1 dimension

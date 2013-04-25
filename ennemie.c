@@ -15,6 +15,8 @@ Date de dernière modification : 05/04/2013
 #include <SDL/SDL.h>
 //si l'erreur "undefined reference to `IMG_Load' " ajouter le fichier "SDL_image.lib" dans l'éditeur de lien
 #include <SDL_image.h>
+//Pour tiré des nombres aléatoires
+#include <time.h>
 
 #include "headers/constantes.h"
 #include "headers/ennemie.h"
@@ -37,6 +39,11 @@ Date de dernière modification : 05/04/2013
 #define LATENCE_TIR_AVION 1
 //Plus la porter est grande, plus l'avion poura tirré loin
 #define PORTER_TIR_AVION 400
+//------------------------------------------------------------------------
+
+//--------------------------------DEFINE SOUCOUPE-----------------------------
+//Plus la vitesse est grande et plus l'avion se déplacera rapidement
+#define VITESSE_SOUCOUPE  3
 //------------------------------------------------------------------------
 
 //-----------------------------------------------PARTIE TANK---------------------------------------------------
@@ -90,6 +97,7 @@ void iniTank(SDL_Surface *ecran,sprite *tank)
 
     //vie du tank
     tank->vie=VIE_TANK;
+    tank->tempsMort=0;
 
     //on attribue les propriété de l'écran a la structure tank
     tank->imageUtilise.positionEcran=ecran;
@@ -233,6 +241,7 @@ void iniAvion(SDL_Surface *ecran,sprite *avion)
 
     //vie de l'avion
     avion->vie=VIE_AVION;
+    avion->tempsMort=0;
 
     //on attribue les propriété de l'écran a la structure avion
     avion->imageUtilise.positionEcran=ecran;
@@ -363,33 +372,23 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
     int i=0;
 
     //initialise les surface
-    for(i=0;i<=IMAGE4;i++)
+    for(i=0;i<=IMAGE2;i++)
     {
         soucoupe->image[i].image=NULL;
     }
 
     //chargement des images de la soucoupe volante
-    soucoupe->image[IMAGE1].image=IMG_Load(NOM_FICHIER_HELICO);
-    soucoupe->image[IMAGE2].image=IMG_Load(NOM_FICHIER_HELICO2);
-    soucoupe->image[IMAGE3].image=IMG_Load(NOM_FICHIER_HELICO3);
-    soucoupe->image[IMAGE4].image=IMG_Load(NOM_FICHIER_HELICO4);
+    soucoupe->image[IMAGE1].image=IMG_Load(NOM_FICHIER_SOUCOUPE);
+    soucoupe->image[IMAGE2].image=IMG_Load(NOM_FICHIER_SOUCOUPE2);
 
     //verification que l'image soit bien charger
     if(soucoupe->image[IMAGE1].image==NULL)
     {
-        erreur_image(NOM_FICHIER_HELICO);
+        erreur_image(NOM_FICHIER_SOUCOUPE);
     }
     if(soucoupe->image[IMAGE2].image==NULL)
     {
-        erreur_image(NOM_FICHIER_HELICO2);
-    }
-    if(soucoupe->image[IMAGE3].image==NULL)
-    {
-        erreur_image(NOM_FICHIER_HELICO3);
-    }
-    if(soucoupe->image[IMAGE4].image==NULL)
-    {
-        erreur_image(NOM_FICHIER_HELICO4);
+        erreur_image(NOM_FICHIER_SOUCOUPE2);
     }
 
     //initialisation de la position de la soucoupe volante
@@ -398,6 +397,7 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
 
     //vie de la soucoupe
     soucoupe->vie=VIE_SOUCOUPE;
+    soucoupe->tempsMort=0;
 
     //on attribue les propriété de l'écran a la structure soucoupe
     soucoupe->imageUtilise.positionEcran=ecran;
@@ -415,12 +415,12 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
 
 }
 
-void deplacementSoucoupe(sprite *soucoupe,sprite *helico,int positionMap,tilesets *tilesetsMap,int** map,int tempsActu,int *tempsAvion)
+void deplacementSoucoupe(sprite *soucoupe,sprite *helico,int positionMap,tilesets *tilesetsMap,int** map,int tempsActu,int *tempsSoucoupe)
 {
     int limiteDeplacement=0;
     limiteDeplacement=soucoupe->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w;
 
-    if(tempsActu>((*tempsAvion)+(200/VITESSE_AVION) ) &&
+    if(tempsActu>((*tempsSoucoupe)+(200/VITESSE_SOUCOUPE) ) &&
        (positionMap-soucoupe->image[IMAGE1].position.x<limiteDeplacement) && (positionMap-soucoupe->image[IMAGE1].position.x>(limiteDeplacement*-1) )
        && (soucoupe->image[IMAGE1].position.x>saveZone(soucoupe,tilesetsMap) ) )
     {
@@ -428,23 +428,56 @@ void deplacementSoucoupe(sprite *soucoupe,sprite *helico,int positionMap,tileset
         if(positionMap>((soucoupe->image[IMAGE1].position.x)+((soucoupe->image[IMAGE1].image->w/2)/tilesetsMap->infoImage[0].image->w)) )
         {
             soucoupe->image[IMAGE1].position.x++;
-            soucoupe->imageUtilise.direction=DROITE;
         }
         else if(positionMap<((soucoupe->image[IMAGE1].position.x)+((soucoupe->image[IMAGE1].image->w/2)/tilesetsMap->infoImage[0].image->w)) )
         {
             soucoupe->image[IMAGE1].position.x--;
-            soucoupe->imageUtilise.direction=GAUCHE;
         }
         if(helico->image[IMAGE1].position.y>soucoupe->image[IMAGE1].position.y)
         {
-            soucoupe->image[IMAGE1].position.y+=VITESSE_AVION;
+            soucoupe->image[IMAGE1].position.y+=VITESSE_SOUCOUPE;
         }
         else if(helico->image[IMAGE1].position.y<soucoupe->image[IMAGE1].position.y)
         {
-            soucoupe->image[IMAGE1].position.y-=VITESSE_AVION;
+            soucoupe->image[IMAGE1].position.y-=VITESSE_SOUCOUPE;
         }
 
-        *tempsAvion=tempsActu;
+        *tempsSoucoupe=tempsActu;
+    }
+}
+//-------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------PARTIE GENERALE-----------------------------------------------
+int spawnAlea(sprite *Sprite,tilesets *tilesetsMap)
+{
+    int nombre_aleatoire=0,limiteMax=taille_map(),limiteMin=saveZone(Sprite,tilesetsMap);
+
+    if(limiteMax==0)
+        limiteMax=TAILLE_MAP_PREDEFINIE;
+
+    limiteMax-=Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w;
+
+    //srand(time(NULL));
+    nombre_aleatoire = rand()%(limiteMax-limiteMin) +limiteMin;
+
+    return nombre_aleatoire;
+}
+
+int autorisationRespawn(sprite *Sprite,int tempsActu,int tempsRespawn)
+{
+    if(((tempsRespawn+Sprite->tempsMort))>tempsActu)
+        return 0;
+    else
+        return 1;
+}
+
+void respawn(sprite *Sprite,tilesets *tilesetsMap,int tempsActu,int tempsRespawn,int vie)
+{
+    if(autorisationRespawn(Sprite,tempsActu,tempsRespawn)==1 && Sprite->vie<=0)
+    {
+        test();
+        Sprite->vie=vie;
+        Sprite->image[IMAGE1].position.x=spawnAlea(Sprite,tilesetsMap);
     }
 }
 //-------------------------------------------------------------------------------------------------------------
