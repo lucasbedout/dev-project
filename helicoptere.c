@@ -29,7 +29,7 @@ void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
     int i=0;
 
     //initialise les surface
-    for(i=0;i<=IMAGE4;i++)
+    for(i=0;i<=IMAGE6;i++)
     {
         helico->image[i].image=NULL;
     }
@@ -39,24 +39,22 @@ void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
     helico->image[IMAGE2].image=IMG_Load(NOM_FICHIER_HELICO2);
     helico->image[IMAGE3].image=IMG_Load(NOM_FICHIER_HELICO3);
     helico->image[IMAGE4].image=IMG_Load(NOM_FICHIER_HELICO4);
+    helico->image[IMAGE5].image=IMG_Load(NOM_FICHIER_HELICO5);
+    helico->image[IMAGE6].image=IMG_Load(NOM_FICHIER_HELICO6);
 
     //verification que l'image soit bien charger
     if(helico->image[IMAGE1].image==NULL)
-    {
         erreur_image(NOM_FICHIER_HELICO);
-    }
     if(helico->image[IMAGE2].image==NULL)
-    {
         erreur_image(NOM_FICHIER_HELICO2);
-    }
     if(helico->image[IMAGE3].image==NULL)
-    {
         erreur_image(NOM_FICHIER_HELICO3);
-    }
     if(helico->image[IMAGE4].image==NULL)
-    {
         erreur_image(NOM_FICHIER_HELICO4);
-    }
+    if(helico->image[IMAGE5].image==NULL)
+        erreur_image(NOM_FICHIER_HELICO5);
+    if(helico->image[IMAGE6].image==NULL)
+        erreur_image(NOM_FICHIER_HELICO6);
 
     //position de l'hélico
     helico->image[IMAGE1].position.x=0;
@@ -89,6 +87,7 @@ void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
     helico->imageUtilise.tir.coefIndice=0.0;
     helico->imageUtilise.tir.signeEquation=0;
     helico->imageUtilise.tir.actionEnCour=0;
+    helico->imageUtilise.tir.nbExplosion=0;
     //-------------------------------
 }
 
@@ -104,10 +103,12 @@ void deplacementHelico(sprite *helico,SDL_Event* even,int *positionMap,tilesets 
                     case SDLK_UP:
                     case SDLK_w:
                         helico->image[IMAGE1].position.y-=VITESSE_HELICO;
+                        helico->imageUtilise.direction=FACE;
                         break;
                     case SDLK_DOWN:
                     case SDLK_s:
                         helico->image[IMAGE1].position.y+=VITESSE_HELICO;
+                        helico->imageUtilise.direction=FACE;
                         break;
                     case SDLK_LEFT:
                     case SDLK_a:
@@ -139,7 +140,7 @@ int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sp
     if(helico->imageUtilise.direction==GAUCHE)
     {
         //si l'image 1 est blitter et que le temps est supérieur a 50ms on blitte l'image 2
-        if( ( (image==IMAGE1) && ((tempsActu-tempsPrece)>50) ) || image==IMAGE3 || image==IMAGE4 )
+        if( (image!=IMAGE2) && ((tempsActu-tempsPrece)>50) )
         {
             SDL_BlitSurface(helico->image[IMAGE2].image,NULL,ecran,&(helico->image[IMAGE1].position));
 
@@ -156,7 +157,7 @@ int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sp
     else if(helico->imageUtilise.direction==DROITE)
     {
         //si l'image 3 est blitter et que le temps est supérieur a 50ms on blitte l'image 4
-        if( ( (image==IMAGE3) && ((tempsActu-tempsPrece)>50) ) || image==IMAGE1 || image==IMAGE2 )
+        if( (image!=IMAGE4) && ((tempsActu-tempsPrece)>50) )
         {
             SDL_BlitSurface(helico->image[IMAGE4].image,NULL,ecran,&(helico->image[IMAGE1].position));
 
@@ -168,6 +169,21 @@ int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sp
             SDL_BlitSurface(helico->image[IMAGE3].image,NULL,ecran,&(helico->image[IMAGE1].position));
 
             return IMAGE3;
+        }
+    }
+    else if(helico->imageUtilise.direction==FACE)
+    {
+        if( (image!=IMAGE5) && ((tempsActu-tempsPrece)>50) )
+        {
+            SDL_BlitSurface(helico->image[IMAGE5].image,NULL,ecran,&(helico->image[IMAGE1].position));
+
+            return IMAGE5;
+        }
+        else if ( (image==IMAGE5) && ((tempsActu-tempsPrece)>50) );
+        {
+            SDL_BlitSurface(helico->image[IMAGE6].image,NULL,ecran,&(helico->image[IMAGE1].position));
+
+            return IMAGE6;
         }
     }
 }
@@ -231,16 +247,62 @@ int atterrissageHelico(sprite *helico,int** map,tilesets *tilesetsMap,int positi
     }
 }
 
-void Gestion_Vie_helico(int *vie,sprite *helico,sprite *tank,SDL_Rect *tir_Tank,sprite *avion,SDL_Rect *tir_Avion)
+int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap)
 {
-    //regarde si dans un premier temps le tir du tank touche l'hélico puis regarde si le tir de l'avion touche l'hélico
-    /*if( ( ( (helico->image1.position.x)<=(tir_Tank->x+tank->imageUtilise.tir->w) && (helico->image1.position.x+helico->image1.position.w)>=tir_Tank->x ) ||
-         ( (helico->image1.position.y)<=(tir_Tank->y+tank->imageUtilise.tir->h) && (helico->image1.position.y+helico->image1.position.h)>=tir_Tank->y ) ) ||
+    //Variable créer pour réduire le nombre de ligne et facilité la lecture de la condition suivante
+    int helicoPosX=0,helicoPosY=0,tirSpriteX=0,tirSpriteY=0,tailleHelicoX=0,tailleHelicoY=0,tailleTirSpriteX=0,tailleTirSpriteY=0;
 
-        ( ( (helico->image1.position.x)<=(tir_Avion->x+avion->imageUtilise.tir->w) && (helico->image1.position.x+helico->image1.position.w)>=tir_Avion->x ) ||
-         ( (helico->image1.position.y)<=(tir_Avion->y+avion->imageUtilise.tir->h) && (helico->image1.position.y+helico->image1.position.h)>=tir_Avion->y ) )
-       )
-       {
-            *vie-=1;
-       }*/
+    helicoPosX=positionMap;
+    helicoPosY=helico->image[IMAGE1].position.y;
+
+    tirSpriteX=ennemie->imageUtilise.tir.positionTir.x;
+    tirSpriteY=ennemie->imageUtilise.tir.positionTir.y;
+
+    tailleHelicoX=helico->image[IMAGE1].image->w/tilesetsMap.infoImage[IMAGE1].image->w;
+    tailleHelicoY=helico->image[IMAGE1].image->h;
+
+    tailleTirSpriteX=ennemie->imageUtilise.tir.image[IMAGE1]->w/tilesetsMap.infoImage[IMAGE1].image->w;
+    tailleTirSpriteY=ennemie->imageUtilise.tir.image[IMAGE1]->h;
+
+    //regarde si dans un premier temps le tir du tank touche l'hélico puis regarde si le tir de l'avion touche l'hélico
+    if( ennemie->imageUtilise.tir.actionEnCour==1 &&
+        ( ( ( (tirSpriteX+tailleTirSpriteX)>=(helicoPosX-tailleHelicoX/2) ) && ( tirSpriteX<=(helicoPosX+tailleHelicoX/2) ) ) &&
+        ( ( ( (tirSpriteY+tailleTirSpriteY)>= helicoPosY) && ( tirSpriteY<=( helicoPosY+tailleHelicoY ) ) ) ) ) )
+        {
+            //on retire un point de vie
+            helico->vie--;
+
+            //on indique que le tir est fini et on réinitialise le tir
+            ennemie->imageUtilise.tir.actionEnCour=0;
+            ennemie->imageUtilise.tir.signeEquation=0;
+            return 1;
+        }
+    else
+        return 0;
+}
+
+void gestion_colision_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap)
+{
+    //Si l'hélico se fait toucher par la soucoupe
+    if( colisionSpriteHelico(*helico,*ennemie,tilesetsMap,positionMap)==1 && ennemie->vie>0 )
+            //l'hélico est détruit
+            helico->vie=0;
+}
+
+void gestionColisionSprite(sprite *helico,sprite spriteCible,tilesets tilesetsMap,int *positionMap,SDL_Event even)
+{
+    if(colisionSpriteHelico(*helico,spriteCible,tilesetsMap,*positionMap))
+        {
+            while(colisionSpriteHelico(*helico,spriteCible,tilesetsMap,*positionMap))
+            {
+                if(even.key.keysym.sym==SDLK_LEFT || even.key.keysym.sym==SDLK_a)
+                    *positionMap+=1;
+                else if(even.key.keysym.sym==SDLK_RIGHT || even.key.keysym.sym==SDLK_d)
+                    *positionMap-=1;
+                else if(even.key.keysym.sym==SDLK_DOWN || even.key.keysym.sym==SDLK_s)
+                    helico->image[IMAGE1].position.y--;
+                else if(even.key.keysym.sym==SDLK_UP || even.key.keysym.sym==SDLK_w)
+                    helico->image[IMAGE1].position.y++;
+            }
+        }
 }

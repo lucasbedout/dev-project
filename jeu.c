@@ -57,9 +57,6 @@ void jeu (SDL_Surface *ecran)
     iniPosHelicoptere(ecran,&helico);
     //---------------------------------------
 
-    //---------VARIABLE SOUCOUPE VOLANTE--------
-    //------------------------------------------
-
     //---------VARIABLE TANK--------------------
     sprite *tank;
     tank=malloc(sizeof(sprite)*NOMBRE_TANK);
@@ -124,11 +121,11 @@ void jeu (SDL_Surface *ecran)
     initilisationTemps(tempsJeu.tempsPrecedent);
     //------------------------------------------------------------
 
-    //---------------Blitage---------------------
-    SDL_BlitSurface(helico.image[IMAGE1].image,NULL,ecran,&helico.image[IMAGE1].position);
-    //--------------------------------------------
-
-    SDL_Flip(ecran);
+    //----------------DECLARATION RESULTAT------------------------
+    imgMenu victoire,defaite,explosion;
+    iniResult(&victoire,&defaite,ecran);
+    iniExplosion(&explosion,ecran);
+    //------------------------------------------------------------
 
     //activation des touches répétter
     SDL_EnableKeyRepeat(10,10);
@@ -143,11 +140,16 @@ void jeu (SDL_Surface *ecran)
     tempsJeu.tempsActuel=SDL_GetTicks(); //temps actuel du jeu
     //----------------------------------------------------------------
 
-    while(continuer)
+    while(continuer && helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord) )
     {
         option(&continuer,&even);
 
         deplacementHelico(&helico,&even,&positionMap,&tilesetsMap,map);
+
+        //verification des colision par rapport aux sprite
+        gestionColisionSprite(&helico,bariere,tilesetsMap,&positionMap,even);
+        for(i=0;i<nbCaserne;i++)
+            gestionColisionSprite(&helico,caserne[i],tilesetsMap,&positionMap,even);
 
         //On blitte toute les surfaces et on rafraichie l'image
         affiche_map(map,ecran,tilesetsMap,positionMap);
@@ -162,7 +164,7 @@ void jeu (SDL_Surface *ecran)
         //Si l'action est en cour, on blitte le tir enfonction de l'équation
         else
         {
-            tir(&helico);
+            tir(&helico,tilesetsMap);
             decallement_image_map_hauteurPixel(&helico,&tilesetsMap,helico.imageUtilise.tir.positionTir.y,helico.imageUtilise.tir.positionTir.x,positionMap,helico.imageUtilise.tir.image[IMAGE1]);
         }
         //-------------FIN PARTIE TIR----------------
@@ -176,7 +178,7 @@ void jeu (SDL_Surface *ecran)
         }
         else
         {
-            SDL_BlitSurface(helico.image[IMAGE1].image,NULL,ecran,&helico.image[IMAGE1].position);
+            SDL_BlitSurface(helico.image[IMAGE5].image,NULL,ecran,&helico.image[IMAGE1].position);
         }
 
         //-------------animation ennemies---------
@@ -192,20 +194,25 @@ void jeu (SDL_Surface *ecran)
                     //Si l'utilisateur tir, on calcullera la trajectoire
                     calculTrajectoireTank(&tank[i],&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[14+(i*TMP_DECAL_TAB_TANK)]));
                 }
-                //Si l'action est en cour, on blitte le tir enfonction de l'équation
-                else
-                {
-                    if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[16+(i*TMP_DECAL_TAB_TANK)]+1000/VITESSE_TIR_ENNEMIE) )
-                    {
-                        tir(&tank[i]);
-                        tempsJeu.tempsPrecedent[16+(i*TMP_DECAL_TAB_TANK)]=tempsJeu.tempsActuel;
-                    }
-                    decallement_image_map_hauteurPixel(&tank[i],&tilesetsMap,tank[i].imageUtilise.tir.positionTir.y,tank[i].imageUtilise.tir.positionTir.x,positionMap,tank[i].imageUtilise.tir.image[IMAGE1]);
-                }
-                Gestion_Vie_sprite(&tank[i],&helico,&tilesetsMap,tempsJeu.tempsActuel);
+                if(Gestion_Vie_sprite(&tank[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
+                    declenchementExplosion(&explosion,&tank[i],helico);
             }
             else
                 respawn(&tank[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_TANK,VIE_TANK);
+
+            //Si l'action est en cour, on blitte le tir enfonction de l'équation
+            if(tank[i].imageUtilise.tir.actionEnCour==1)
+            {
+                if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[16+(i*TMP_DECAL_TAB_TANK)]+1000/VITESSE_TIR_ENNEMIE) )
+                {
+                    tir(&tank[i],tilesetsMap);
+                    tempsJeu.tempsPrecedent[16+(i*TMP_DECAL_TAB_TANK)]=tempsJeu.tempsActuel;
+                }
+                decallement_image_map_hauteurPixel(&tank[i],&tilesetsMap,tank[i].imageUtilise.tir.positionTir.y,tank[i].imageUtilise.tir.positionTir.x,positionMap,tank[i].imageUtilise.tir.image[IMAGE1]);
+            }
+
+            if(tank[i].imageUtilise.tir.nbExplosion>0)
+                afficheExplosion(&tank[i],explosion,tilesetsMap,positionMap);
         }
 
         for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
@@ -220,20 +227,26 @@ void jeu (SDL_Surface *ecran)
                     //Si l'utilisateur tir, on calcullera la trajectoire
                     calculTrajectoireAvion(&avion[i],&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[27+(i*TMP_DECAL_TAB_AVION)]));
                 }
-                //Si l'action est en cour, on blitte le tir enfonction de l'équation
-                else
-                {
-                    if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[28+(i*TMP_DECAL_TAB_AVION)]+1000/VITESSE_TIR_ENNEMIE) )
-                    {
-                        tir(&avion[i]);
-                        tempsJeu.tempsPrecedent[28+(i*TMP_DECAL_TAB_AVION)]=tempsJeu.tempsActuel;
-                    }
-                    animationTir(&avion[i],&tilesetsMap,positionMap);
-                }
-                Gestion_Vie_sprite(&avion[i],&helico,&tilesetsMap,tempsJeu.tempsActuel);
+                if(Gestion_Vie_sprite(&avion[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
+                    declenchementExplosion(&explosion,&avion[i],helico);
             }
             else
                 respawn(&avion[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_AVION,VIE_AVION);
+
+            //Si l'action est en cour, on blitte le tir enfonction de l'équation
+            if(avion[i].imageUtilise.tir.actionEnCour==1)
+            {
+                if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[28+(i*TMP_DECAL_TAB_AVION)]+1000/VITESSE_TIR_ENNEMIE) )
+                {
+                    tir(&avion[i],tilesetsMap);
+                    tempsJeu.tempsPrecedent[28+(i*TMP_DECAL_TAB_AVION)]=tempsJeu.tempsActuel;
+                }
+                animationTir(&avion[i],&tilesetsMap,positionMap);
+            }
+
+            if(avion[i].imageUtilise.tir.nbExplosion>0)
+                afficheExplosion(&avion[i],explosion,tilesetsMap,positionMap);
+
         }
 
         for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
@@ -242,10 +255,15 @@ void jeu (SDL_Surface *ecran)
             {
                 deplacementSoucoupe(&soucoupe[i],&helico,positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[30]));
                 soucoupe[i].imageUtilise.numeroImage=animationSprite(soucoupe[i].imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[29],&soucoupe[i],&tilesetsMap,positionMap);
-                Gestion_Vie_sprite(&soucoupe[i],&helico,&tilesetsMap,tempsJeu.tempsActuel);
+
+                if(Gestion_Vie_sprite(&soucoupe[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
+                    declenchementExplosion(&explosion,&soucoupe[i],helico);
             }
             else
-                respawn(&tank[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_SOUCOUPE,VIE_SOUCOUPE);
+                respawn(&soucoupe[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_SOUCOUPE,VIE_SOUCOUPE);
+
+            if(soucoupe[i].imageUtilise.tir.nbExplosion>0)
+                afficheExplosion(&soucoupe[i],explosion,tilesetsMap,positionMap);
         }
         //------------------------------
 
@@ -257,8 +275,13 @@ void jeu (SDL_Surface *ecran)
                 decallement_image_map_hauteurPixel(&caserne[i],&tilesetsMap,caserne[i].image[IMAGE1].position.y,caserne[i].image[IMAGE1].position.x,positionMap,caserne[i].image[IMAGE1].image);
                 //Si la caserne se fait attaquer par un ennemie ou l'hélico
                 for(j=0;j<NOMBRE_TANK;j++)
-                    Gestion_Vie_sprite(&caserne[i],&tank[j],&tilesetsMap,tempsJeu.tempsActuel);
-                Gestion_Vie_sprite(&caserne[i],&helico,&tilesetsMap,tempsJeu.tempsActuel);
+                    {
+                        if(Gestion_Vie_sprite(&caserne[i],&tank[j],&tilesetsMap,tempsJeu.tempsActuel))
+                            declenchementExplosion(&explosion,&caserne[i],tank[j]);
+                    }
+
+                if(Gestion_Vie_sprite(&caserne[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
+                    declenchementExplosion(&explosion,&caserne[i],helico);
             }
             else
             {
@@ -271,12 +294,25 @@ void jeu (SDL_Surface *ecran)
                     deplacementOtageVersHelico(&Otage[i],&helico,&bariere,map,&tilesetsMap,positionMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[nbCaserne+i]) );
                     Otage[i].strucSprite.imageUtilise.numeroImage=animationSprite(Otage[i].strucSprite.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[nbCaserne+i],&Otage[i].strucSprite,&tilesetsMap,positionMap);
                     //Si l'otage se fait attaqué par un ennemie ou l'hélico
-                    Gestion_Vie_sprite(&(Otage[i].strucSprite),&helico,&tilesetsMap,tempsJeu.tempsActuel);
+                    if(Gestion_Vie_sprite(&(Otage[i].strucSprite),&helico,&tilesetsMap,tempsJeu.tempsActuel))
+                        declenchementExplosion(&explosion,&Otage[i].strucSprite,helico);
+
+                    //Si un otage se fait écrasé et que l'hélico n'était pas en train de décoller
+                    if(Helico_ecrase_otage(helico,Otage[i].strucSprite,map,tilesetsMap,positionMap))
+                        Otage[i].strucSprite.vie=0;
+
                     for(j=0;j<NOMBRE_TANK;j++)
-                        Gestion_Vie_sprite(&(Otage[i].strucSprite),&tank[j],&tilesetsMap,tempsJeu.tempsActuel);
+                    {
+                        if(Gestion_Vie_sprite(&(Otage[i].strucSprite),&tank[j],&tilesetsMap,tempsJeu.tempsActuel))
+                            declenchementExplosion(&explosion,&Otage[i].strucSprite,tank[i]);
+                    }
                     gestionFileOtage(&(Otage[i]),&helico,caserne[i].image[IMAGE1].position.x,caserne[i].image[IMAGE1].position.y,map,&tilesetsMap,positionMap,&nbOtageBord);
                 }
+                if(Otage[i].strucSprite.imageUtilise.tir.nbExplosion>0)
+                    afficheExplosion(&Otage[i].strucSprite,explosion,tilesetsMap,positionMap);
             }
+            if(caserne[i].imageUtilise.tir.nbExplosion>0)
+                afficheExplosion(&caserne[i],explosion,tilesetsMap,positionMap);
         }
         //--------------------------------
 
@@ -293,6 +329,28 @@ void jeu (SDL_Surface *ecran)
         decallement_image_map_hauteurPixel(&bariere,&tilesetsMap,bariere.image[IMAGE1].position.y,bariere.image[IMAGE1].position.x,positionMap,bariere.image[IMAGE1].image);
         //---------------------------------------
 
+        #if INVINCIBLE==0
+        //On regarde enfin si l'hélicoptère c'est fait toucher par un ennemie
+        for(i=0;i<NOMBRE_TANK && ((i*IMPORTANCE_TANK)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+        {
+            if(Gestion_Vie_helico(&helico,&tank[i],positionMap,tilesetsMap))
+                declenchementExplosion(&explosion,&helico,tank[i]);
+        }
+        for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+        {
+            if(Gestion_Vie_helico(&helico,&avion[i],positionMap,tilesetsMap))
+                declenchementExplosion(&explosion,&helico,avion[i]);
+        }
+        for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+        {
+            if(Gestion_Vie_helico(&helico,&soucoupe[i],positionMap,tilesetsMap))
+                declenchementExplosion(&explosion,&helico,soucoupe[i]);
+        }
+
+        if(helico.imageUtilise.tir.nbExplosion>0)
+            afficheExplosion(&helico,explosion,tilesetsMap,positionMap);
+        #endif
+
         SDL_Flip(ecran);
 
         //Mise en place des FPS
@@ -303,10 +361,21 @@ void jeu (SDL_Surface *ecran)
         }
     }
 
+    //On affiche le résultat, victoire si l'hélico est encore vivant, defaite si l'hélico est détruit
+    if(helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord)==0)
+        SDL_BlitSurface(victoire.img,NULL,ecran,&victoire.positionImg);
+    else if(helico.vie<=0)
+        SDL_BlitSurface(defaite.img,NULL,ecran,&defaite.positionImg);
+
+    if( (helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord)==0) || helico.vie<=0 ){
+    SDL_Flip(ecran);
+    while(even.type!=SDL_KEYUP)
+        SDL_WaitEvent(&even);
+    }
+
     //on libere les images chargeren mémoire
     for(i=0;i<=IMAGE4;i++)
     {
-        SDL_FreeSurface(helico.image[i].image);
         for(j=0;j<NOMBRE_TANK;j++)
             SDL_FreeSurface(tank[j].image[i].image);
         for(j=0;j<NOMBRE_AVION;j++)
@@ -331,13 +400,14 @@ void jeu (SDL_Surface *ecran)
             SDL_FreeSurface(caserne[i].image[j].image);
         }
 
-        for(j=0;j<=IMAGE5;j++)
+        for(j=0;j<=IMAGE6;j++)
         {
             SDL_FreeSurface(Otage[i].strucSprite.image[j].image);
         }
     }
-    for(j=0;j<=IMAGE5;j++)
+    for(j=0;j<=IMAGE6;j++)
     {
+        SDL_FreeSurface(helico.image[j].image);
         SDL_FreeSurface(Otage[nbCaserne].strucSprite.image[j].image);
     }
     //liberation de la mémoire alouer
@@ -350,6 +420,10 @@ void jeu (SDL_Surface *ecran)
     SDL_FreeSurface(bariere.image[IMAGE1].image);
     liberation_tilesets(&tilesetsMap);
 
+    //liberation des images lier a la victoire/defaite
+    SDL_FreeSurface(victoire.img);
+    SDL_FreeSurface(defaite.img);
+
 }
 
 void option(int* continuer,SDL_Event *even)
@@ -359,14 +433,14 @@ void option(int* continuer,SDL_Event *even)
     switch(even->type)
     {
         case SDL_QUIT:
-            //*continuer=0;
+            *continuer=0;
             break;
 
         case SDL_KEYDOWN:
                 switch(even->key.keysym.sym)
                 {
                     case SDLK_ESCAPE:
-                        *continuer=0;
+                        menuPause(continuer,even);
                         break;
                 }
                 break;

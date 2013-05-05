@@ -107,10 +107,13 @@ void iniTank(SDL_Surface *ecran,sprite *tank)
     tank->imageUtilise.direction=GAUCHE;
 
     //---------TIR DU TANK------------
+    tank->imageUtilise.tir.positionTir.x=0;
+    tank->imageUtilise.tir.positionTir.y=0;
     tank->imageUtilise.tir.coefDirecteur=0.0;
     tank->imageUtilise.tir.coefIndice=0.0;
     tank->imageUtilise.tir.signeEquation=0;
     tank->imageUtilise.tir.actionEnCour=0;
+    tank->imageUtilise.tir.nbExplosion=0;
     //-------------------------------
 }
 
@@ -251,10 +254,13 @@ void iniAvion(SDL_Surface *ecran,sprite *avion)
     avion->imageUtilise.direction=GAUCHE;
 
     //---------TIR DU AVION-----------
+    avion->imageUtilise.tir.positionTir.x=0;
+    avion->imageUtilise.tir.positionTir.y=0;
     avion->imageUtilise.tir.coefDirecteur=0.0;
     avion->imageUtilise.tir.coefIndice=0.0;
     avion->imageUtilise.tir.signeEquation=0;
     avion->imageUtilise.tir.actionEnCour=0;
+    avion->imageUtilise.tir.nbExplosion=0;
     avion->imageUtilise.tir.numeroImage=IMAGE1;
     //-------------------------------
 }
@@ -411,6 +417,7 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
     soucoupe->imageUtilise.tir.coefIndice=0.0;
     soucoupe->imageUtilise.tir.signeEquation=0;
     soucoupe->imageUtilise.tir.actionEnCour=0;
+    soucoupe->imageUtilise.tir.nbExplosion=0;
     //-------------------------------
 
 }
@@ -441,6 +448,10 @@ void deplacementSoucoupe(sprite *soucoupe,sprite *helico,int positionMap,tileset
         {
             soucoupe->image[IMAGE1].position.y-=VITESSE_SOUCOUPE;
         }
+
+        //Si on est dans la save zone alors on reste a distance
+        if(soucoupe->image[IMAGE1].position.x<=saveZone(soucoupe,tilesetsMap) )
+            soucoupe->image[IMAGE1].position.x=saveZone(soucoupe,tilesetsMap)+1;
 
         *tempsSoucoupe=tempsActu;
     }
@@ -475,7 +486,6 @@ void respawn(sprite *Sprite,tilesets *tilesetsMap,int tempsActu,int tempsRespawn
 {
     if(autorisationRespawn(Sprite,tempsActu,tempsRespawn)==1 && Sprite->vie<=0)
     {
-        test();
         Sprite->vie=vie;
         Sprite->image[IMAGE1].position.x=spawnAlea(Sprite,tilesetsMap);
     }

@@ -59,8 +59,16 @@ int animationSprite(int image,int tempsActu,int tempsPrece,sprite *spriteAnime,t
     }
     else if(spriteAnime->imageUtilise.direction==FACE)
     {
-        decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE5].image);
-        return IMAGE5;
+        if( (image!=IMAGE5) && ((tempsActu-tempsPrece)>50) )
+        {
+            decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE5].image);
+            return IMAGE5;
+        }
+        else if((image==IMAGE5) && ((tempsActu-tempsPrece)>50));
+        {
+            decallement_image_map_hauteurPixel(spriteAnime,tilesetsMap,spriteAnime->image[IMAGE1].position.y,spriteAnime->image[IMAGE1].position.x,positionMap,spriteAnime->image[IMAGE6].image);
+            return IMAGE6;
+        }
     }
 }
 
@@ -99,10 +107,12 @@ void animationTir (sprite *spriteAnime,tilesets *tilesetsMap,int positionMap)
     }
 }
 
-void tir(sprite *typeSprite)
+int tir(sprite *typeSprite,tilesets tilesetsMap)
 {
     //le i sera utilisé dans une boucle for plus tard dans cette fonction. Les différences seront comparait dans l'algo pour fluidé la trajectoire
     int differenceX=0,differenceY=0;
+    double test=0.0;
+
     //Déclaration des variables
     const int negatif=1,positif=2;
 
@@ -119,7 +129,6 @@ void tir(sprite *typeSprite)
             //calcul de a et b de l'équation y=ax+b
             typeSprite->imageUtilise.tir.coefDirecteur=(typeSprite->imageUtilise.tir.cibleTir.y*1.0-typeSprite->imageUtilise.tir.positionTir.y*1.0)/(typeSprite->imageUtilise.tir.cibleTir.x*1.0-typeSprite->imageUtilise.tir.positionTir.x*1.0);
             typeSprite->imageUtilise.tir.coefIndice=typeSprite->imageUtilise.tir.cibleTir.y*1.0-(typeSprite->imageUtilise.tir.coefDirecteur)*typeSprite->imageUtilise.tir.cibleTir.x;
-
             //définition du type d'équation en fonction du x et du tir
             if(differenceX<0)
             {typeSprite->imageUtilise.tir.signeEquation=negatif;}
@@ -127,6 +136,7 @@ void tir(sprite *typeSprite)
             {typeSprite->imageUtilise.tir.signeEquation=positif;}
         }
 
+        if( typeSprite->imageUtilise.tir.coefDirecteur<17 && typeSprite->imageUtilise.tir.coefDirecteur>-17 ){
             //Si l'équation est de type négative
             if(typeSprite->imageUtilise.tir.signeEquation==negatif)
             {
@@ -165,6 +175,50 @@ void tir(sprite *typeSprite)
 
                 typeSprite->imageUtilise.tir.directionTir=DROITE;
             }
+        }
+        else if( !(typeSprite->imageUtilise.tir.coefDirecteur<17 && typeSprite->imageUtilise.tir.coefDirecteur>-17) )
+        {
+            //Si l'équation est de type négative
+            if(differenceY<=0)
+            {
+                //Si la position dépasse la cible a cause du PAS de la vitesse
+                if( (typeSprite->imageUtilise.tir.positionTir.y-(VITESSE_PROJECTILE*tilesetsMap.infoImage[IMAGE1].image->h) )<typeSprite->imageUtilise.tir.cibleTir.y )
+                {
+                    //Alors on attribue les coordonnées de la cible a la position du tir
+                    typeSprite->imageUtilise.tir.positionTir.x=typeSprite->imageUtilise.tir.cibleTir.x;
+                    typeSprite->imageUtilise.tir.positionTir.y=typeSprite->imageUtilise.tir.cibleTir.y;
+                }
+                //Sinon on calcul le x puis le y de l'équation y=ax+b
+                else
+                {
+                    typeSprite->imageUtilise.tir.positionTir.y-=VITESSE_PROJECTILE*tilesetsMap.infoImage[IMAGE1].image->h;
+                    typeSprite->imageUtilise.tir.positionTir.x=(typeSprite->imageUtilise.tir.positionTir.y-typeSprite->imageUtilise.tir.coefIndice)/typeSprite->imageUtilise.tir.coefDirecteur;
+                }
+
+                typeSprite->imageUtilise.tir.directionTir=GAUCHE;
+            }
+            //Si l'équation est de type positive
+            else if(differenceY>=0)
+            {
+                //Si la position dépasse la cible a cause du PAS de la vitesse
+                if( ( typeSprite->imageUtilise.tir.positionTir.y+(VITESSE_PROJECTILE*tilesetsMap.infoImage[IMAGE1].image->h) )>typeSprite->imageUtilise.tir.cibleTir.y )
+                {
+                    //Alors on attribue les coordonnées de la cible a la position du tir
+                    typeSprite->imageUtilise.tir.positionTir.x=typeSprite->imageUtilise.tir.cibleTir.x;
+                    typeSprite->imageUtilise.tir.positionTir.y=typeSprite->imageUtilise.tir.cibleTir.y;
+                }
+                //Sinon on calcul le x puis le y de l'équation y=ax+b
+                else
+                {
+                    typeSprite->imageUtilise.tir.positionTir.y+=VITESSE_PROJECTILE*tilesetsMap.infoImage[IMAGE1].image->h;
+                    typeSprite->imageUtilise.tir.positionTir.x=(typeSprite->imageUtilise.tir.positionTir.y-typeSprite->imageUtilise.tir.coefIndice)/typeSprite->imageUtilise.tir.coefDirecteur;
+                }
+
+                typeSprite->imageUtilise.tir.directionTir=DROITE;
+            }
+        }
+
+        return 1;
     }
     //Sinon, si la position du tir et de la cible sont égaux alors l'action est fini
     else
@@ -174,10 +228,12 @@ void tir(sprite *typeSprite)
         typeSprite->imageUtilise.tir.signeEquation=0;
         typeSprite->imageUtilise.tir.coefDirecteur=0;
         typeSprite->imageUtilise.tir.coefIndice=0;
+
+        return 0;
     }
 }
 
-void Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap,int tempsActu)
+int Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap,int tempsActu)
 {
     //Variable créer pour réduire le nombre de ligne et facilité la lecture de la condition suivante
     int spritePosX=0,spritePosY=0,tirHelicoX=0,tirHelicoY=0,tailleSpriteX=0,tailleSpriteY=0,tailleTirHelicoX=0,tailleTirHelicoY=0;
@@ -203,10 +259,18 @@ void Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap,int 
             Sprite->vie--;
             //Si la vie est a 0, on indique la date de la mort
             Sprite->tempsMort=tempsActu;
-            //on indique que le tir est fini et on réinitialise le tir
-            helico->imageUtilise.tir.actionEnCour=0;
-            helico->imageUtilise.tir.signeEquation=0;
+
+            //si le sprite meur, on réinitialise tout
+            if(Sprite->vie<0)
+            {
+                Sprite->image[IMAGE1].position.x=0;
+                Sprite->image[IMAGE1].position.y=0;
+            }
+
+            return 1;
        }
+       else
+            return 0;
 }
 
 int hotage_monte_helico(sprite *helico,otage *Otage, int** map,tilesets *tilesetsMap,int positionActu)
@@ -328,12 +392,114 @@ int pourcentSavOtage(int nbOtageBord,int nbOtageBase,int nbCaserne)
     return prcntOtage;
 }
 
-//----------------------A VOIR BIEN PLUS TARD-------------------------------------------
-int Helico_ecrase_otage(sprite *helico,sprite *otage,int** map,tilesets *tilesetsMap,int positionActu)
+int pourcentSavOtageBase(int nbOtageBase,int nbCaserne)
+{
+    int prcntOtage=0;
+
+    prcntOtage=100*nbOtageBase/nbCaserne*NB_OTAGE_PAR_CASERNE;
+
+    return prcntOtage;
+}
+
+int restOtage(otage tabOtage[],int nbCaserne,int nbOtageBord)
+{
+    int i=0,nbOtage=0;
+
+    //On compte si il reste des otages dans des casernes
+    for(i=0;i<nbCaserne;i++)
+        nbOtage+=tabOtage[i].nbOtage;
+
+    //Si il en reste aucun dans les casernes, a bord et que le dernier otage soit rentré dans la caserne, alors il ne reste plus d'otage
+    if(nbOtage==0 && nbOtageBord==0 && tabOtage[i].file==0)
+        return 0;
+    else
+        return 1;
+}
+
+int colisionSprite(sprite spriteMouvant,sprite spriteColision,tilesets tilesetsMap)
+{
+    //Variable créer pour réduire le nombre de ligne et facilité la lecture de la condition suivante
+    int spriteMovPosX=0,spriteMovPosY=0,spriteColPosX=0,spriteColPosY=0,tailleSpriteMovX=0,tailleSpriteMovY=0,tailleSpriteColX=0,tailleSpriteColY=0;
+
+    spriteMovPosX=spriteMouvant.image[IMAGE1].position.x;
+    spriteMovPosY=spriteMouvant.image[IMAGE1].position.y;
+
+    spriteColPosX=spriteColision.image[IMAGE1].position.x;
+    spriteColPosY=spriteColision.image[IMAGE1].position.y;
+
+    tailleSpriteMovX=spriteMouvant.image[IMAGE1].image->w/tilesetsMap.infoImage[0].image->w;
+    tailleSpriteMovY=spriteMouvant.image[IMAGE1].image->h;
+
+    tailleSpriteColX=spriteColision.image[IMAGE1].image->w/tilesetsMap.infoImage[0].image->w;
+    tailleSpriteColY=spriteColision.image[IMAGE1].image->h;
+
+    //regarde si il y a eu colision
+    if( ( ( ( (spriteColPosX+tailleSpriteColX)>=spriteMovPosX ) && ( spriteColPosX<=(spriteMovPosX+tailleSpriteMovX) ) ) &&
+        ( ( ( (spriteColPosY+tailleSpriteColY)>= spriteMovPosY) && ( spriteColPosY<=( spriteMovPosY+tailleSpriteMovY ) ) ) ) ) )
+       return 1;
+    else
+        return 0;
+}
+
+int colisionSpriteHelico(sprite helico,sprite Sprite,tilesets tilesetsMap,int positionMap)
+{
+    //Variable créer pour réduire le nombre de ligne et facilité la lecture de la condition suivante
+    int helicoPosX=0,helicoPosY=0,SpriteX=0,SpriteY=0,tailleHelicoX=0,tailleHelicoY=0,tailleSpriteX=0,tailleSpriteY=0;
+
+    helicoPosX=positionMap;
+    helicoPosY=helico.image[IMAGE1].position.y;
+
+    SpriteX=Sprite.image[IMAGE1].position.x;
+    SpriteY=Sprite.image[IMAGE1].position.y;
+
+    tailleHelicoX=helico.image[IMAGE1].image->w/tilesetsMap.infoImage[IMAGE1].image->w;
+    tailleHelicoY=helico.image[IMAGE1].image->h;
+
+    tailleSpriteX=Sprite.image[IMAGE1].image->w/tilesetsMap.infoImage[IMAGE1].image->w;
+    tailleSpriteY=Sprite.image[IMAGE1].image->h;
+
+    //regarde si dans un premier temps le tir du tank touche l'hélico puis regarde si le tir de l'avion touche l'hélico
+    if( ( ( ( (SpriteX+tailleSpriteX)>=(helicoPosX-tailleHelicoX/2) ) && ( SpriteX<=(helicoPosX+tailleHelicoX/2) ) ) &&
+        ( ( ( (SpriteY+tailleSpriteY)>= helicoPosY) && ( SpriteY<=( helicoPosY+tailleHelicoY ) ) ) ) ) )
+        return 1;
+    else
+        return 0;
+}
+
+void iniExplosion(imgMenu *explosion,SDL_Surface *ecran)
+{
+    explosion->img=NULL;
+
+    //On charge l'image et on regarde si il y a une erreur
+    explosion->img=IMG_Load(NOM_FICHIER_EXPLOSION);
+    if(explosion->img==NULL)
+        erreur_image(NOM_FICHIER_EXPLOSION);
+
+    //On attribu les propriété écran
+    explosion->ecran=ecran;
+
+    //On initialise la position
+    explosion->positionImg.x=0;
+    explosion->positionImg.y=0;
+}
+
+void declenchementExplosion(imgMenu *explosion,sprite *spriteToucher, sprite spriteTirreur)
+{
+    spriteToucher->imageUtilise.tir.nbExplosion=NB_EXPLOSION;
+    explosion->positionImg.x=spriteTirreur.imageUtilise.tir.positionTir.x;
+    explosion->positionImg.y=spriteTirreur.imageUtilise.tir.positionTir.y;
+}
+
+void afficheExplosion(sprite *Sprite,imgMenu explosion,tilesets tilesetsMap,int positionMap)
+{
+    decallement_image_map_hauteurPixel(Sprite,&tilesetsMap,explosion.positionImg.y,explosion.positionImg.x,positionMap,explosion.img);
+    Sprite->imageUtilise.tir.nbExplosion-=1;
+}
+
+int Helico_ecrase_otage(sprite helico,sprite Otage,int** map,tilesets tilesetsMap,int positionActu)
 {
      //on regarde si l'hélico n'est pas attérie et si un otage "touche" l'hélico
-    if(0==atterrissageHelico(helico,map,tilesetsMap,positionActu) && ( ( (helico->image[IMAGE1].position.x)<=(otage->image[IMAGE1].position.x+otage->image[IMAGE1].position.w) && (helico->image[IMAGE1].position.x+helico->image[IMAGE1].position.w)>=otage->image[1].position.x ) ||
-         ( (helico->image[IMAGE1].position.y)<=(otage->image[IMAGE1].position.y+otage->image[IMAGE1].position.h) && (helico->image[IMAGE1].position.y+helico->image[IMAGE1].position.h)>=otage->image[IMAGE1].position.y ) ) )
+    if( !(atterrissageHelico(&helico,map,&tilesetsMap,positionActu)) && colisionSpriteHelico(helico,Otage,tilesetsMap,positionActu))
     {
         //on confirme qu'un otage a été écrasé
         return 1;

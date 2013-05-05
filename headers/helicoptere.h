@@ -24,7 +24,11 @@ void calculTrajectoireTirHelico(SDL_Event* even,sprite *helico,int positionMap,t
 void GestionColision(sprite *helico,int** map,tilesets *tilesetsMap,int positionActu);
 //retour 0 si l'hélicoptère vole sinon retourne 1 si il est atterrie
 int atterrissageHelico(sprite *helico,int** map,tilesets *tilesetsMap,int positionActu);
-//Gestion de la vie de l'hélicoptère
-void Gestion_Vie_helico(int *vie,sprite *helico,sprite *tank,SDL_Rect *tir_Tank,sprite *avion,SDL_Rect *tir_Avion);
+//Gestion de la vie de l'hélicoptère. Retourne 1 si l'hélico est toucher, retourne 0 si il ne l'est pas.
+int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap);
+//gestion de la vie de l'hélico si quelque chose le touche
+void gestion_colision_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap);
+//Permet de faire revenir la position de l'hélico a son origine si il y a une colisition
+void gestionColisionSprite(sprite *helico,sprite spriteCible,tilesets tilesetsMap,int *positionMap,SDL_Event even);
 
 #endif // HELICOPTERE_H_INCLUDED

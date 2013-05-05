@@ -10,6 +10,7 @@ initialise les composants du jeu (fenêtres, variables etc...)
 
 #include "headers/erreur.h"
 #include "headers/constantes.h"
+#include "headers/menu.h"
 
 int main (int argc, char** argv)
 {
@@ -44,6 +45,12 @@ int main (int argc, char** argv)
 
     //on vérifie si une erreur c'est produite
     continuer=verif_erreur();
+
+    imgMenu buton,butonOn;
+    buton.img=IMG_Load("img/Bouton/Buton.png");
+    butonOn.img=IMG_Load("img/Bouton/ButonOn.png");
+    buton.ecran=ecran;
+    butonOn.ecran=ecran;
 
     //choix du menu
     while(continuer)
@@ -92,6 +99,8 @@ int main (int argc, char** argv)
     }
 
     SDL_FreeSurface(Menu);
+    SDL_FreeSurface(buton.img);
+    SDL_FreeSurface(butonOn.img);
     SDL_Quit();
 
     return 0;

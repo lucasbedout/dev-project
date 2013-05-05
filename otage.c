@@ -62,6 +62,9 @@ void iniCaserne(SDL_Surface *ecran,sprite *caserne,int** map,tilesets* tilesetsM
 
     //on initialise le numero de l'image a blitté
     caserne->imageUtilise.numeroImage=IMAGE1;
+
+    //Initialisation dun ombre d'explosion
+    caserne->imageUtilise.tir.nbExplosion=0;
 }
 //------------------------------------------------------------------------
 
@@ -70,7 +73,7 @@ void iniOtage(SDL_Surface *ecran,otage *Otage,int** map,tilesets* tilesetsMap,in
 {
     int i=0;
     //initialise les surface ( image 1 = état normal | image 2 = état détruit )
-    for(i=0;i<=IMAGE5;i++)
+    for(i=0;i<=IMAGE6;i++)
     {
         Otage->strucSprite.image[i].image=NULL;
     }
@@ -81,6 +84,7 @@ void iniOtage(SDL_Surface *ecran,otage *Otage,int** map,tilesets* tilesetsMap,in
     Otage->strucSprite.image[IMAGE3].image=IMG_Load(NOM_FICHIER_OTAGE3);
     Otage->strucSprite.image[IMAGE4].image=IMG_Load(NOM_FICHIER_OTAGE4);
     Otage->strucSprite.image[IMAGE5].image=IMG_Load(NOM_FICHIER_OTAGE5);
+    Otage->strucSprite.image[IMAGE6].image=IMG_Load(NOM_FICHIER_OTAGE6);
 
     //verification que l'image soit bien charger
     if(Otage->strucSprite.image[IMAGE1].image==NULL)
@@ -102,6 +106,10 @@ void iniOtage(SDL_Surface *ecran,otage *Otage,int** map,tilesets* tilesetsMap,in
     if(Otage->strucSprite.image[IMAGE5].image==NULL)
     {
         erreur_image(NOM_FICHIER_OTAGE5);
+    }
+    if(Otage->strucSprite.image[IMAGE6].image==NULL)
+    {
+        erreur_image(NOM_FICHIER_OTAGE6);
     }
 
     //initialisation des position du tank
@@ -125,6 +133,9 @@ void iniOtage(SDL_Surface *ecran,otage *Otage,int** map,tilesets* tilesetsMap,in
 
     //Par défaut, on active la file car lorsque la caserne sera détruite, un otage sortira directement, donc la file sera active
     Otage->file=1;
+
+    //initiliasion du nombre d'otage
+    Otage->strucSprite.imageUtilise.tir.nbExplosion=0;
 }
 
 void deplacementOtageVersHelico(otage *Otage,sprite *helico,sprite *bariere,int** map,tilesets *tilesetsMap,int positionMap,int tempsActu,int *tempsOtage)
@@ -177,7 +188,7 @@ void deplacementOtageVersHelico(otage *Otage,sprite *helico,sprite *bariere,int*
 void gestionFileOtage(otage *Otage,sprite *helico,int positionCaserneX,int positionCaserneY,int **map,tilesets *tilesetsMap,int positionActu,int *nbOtageBord)
 {
     //On regarde si un otage est monter a bord
-    if(Otage->file==1 && 1==hotage_monte_helico(helico,Otage,map,tilesetsMap,positionActu) )
+    if(Otage->file==1 && 1==hotage_monte_helico(helico,Otage,map,tilesetsMap,positionActu) && (*nbOtageBord)<NB_OTAGE_PAR_CASERNE )
     {
         Otage->nbOtage--;
         *nbOtageBord+=1;

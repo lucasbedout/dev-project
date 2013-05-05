@@ -130,7 +130,7 @@ int** map_remplie(SDL_Surface *ecran,tilesets tilesetMap)
 
     //on met en place la hauteur/largeur de la map
     n=ecran->h/map2->h;
-    m=50;
+    m=TAILLE_MAP_PREDEFINIE;
 
 
     //-------------------ALLOCATION TABLEAU DYNAMIQUE 2D--------------
@@ -272,6 +272,13 @@ int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap)
         }
 
         //---------------------FIN ALLOCATION TABLEAU DYNAMIQUE 2D-----------
+
+        //initialisation map
+        for(i=0;i<n;i++)
+        {
+            for(j=0;j<m;j++)
+                map[i][j]=0;
+        }
 
         //chargement de la map
         FILE* fichierMap=NULL;

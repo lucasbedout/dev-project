@@ -14,6 +14,8 @@ Date de dernière modification : 05/04/2013
 
 //Activé ou non le mode designer
 #define MODE_DESIGNER 0
+//Pour que l'hélico soit invincible
+#define INVINCIBLE 1
 
 //--------------------NOM FICHIER ECRAN/MAP--------------
 #define NOM_FICHIER_MENU "img/MenuEcran.png"
@@ -24,6 +26,9 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_MAP_CIEL "img/Tilesets/ciel.png"
 #define NOM_FICHIER_MAP_ROUGE "img/Tilesets/scrolling.png"
 
+#define NOM_FICHIER_EXPLOSION "img/explosion.png"
+#define NB_EXPLOSION 5
+
 #define TAILLE_MAP_PREDEFINIE 50
 //-------------------------------------------------------
 
@@ -32,6 +37,8 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_HELICO2 "img/Helico/helico2.png"
 #define NOM_FICHIER_HELICO3 "img/Helico/helico3.png"
 #define NOM_FICHIER_HELICO4 "img/Helico/helico4.png"
+#define NOM_FICHIER_HELICO5 "img/Helico/helico5.png"
+#define NOM_FICHIER_HELICO6 "img/Helico/helico6.png"
 #define NOM_FICHIER_TIR_HELICO "img/Helico/tirHelico.png"
 //---------------------------------------------------------
 
@@ -75,6 +82,7 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_OTAGE3 "img/Otage/otage3.png"
 #define NOM_FICHIER_OTAGE4 "img/Otage/otage4.png"
 #define NOM_FICHIER_OTAGE5 "img/Otage/otage5.png"
+#define NOM_FICHIER_OTAGE6 "img/Otage/otage6.png"
 //---------------------------------------------------------
 
 //-----------------NOM FICHIER BASE--------------------
@@ -92,7 +100,7 @@ Date de dernière modification : 05/04/2013
 #define NOMBRE_SOUCOUPE 1
 #define NB_CASERNE 5
 #define NOMBRE_MAX_CASERNE 5
-#define NB_OTAGE_PAR_CASERNE 6
+#define NB_OTAGE_PAR_CASERNE 16
 //-----------------------------------------------------------
 
 //----------------------ORDRE D APARITION---------------------
@@ -155,6 +163,7 @@ struct tirSprite
     double coefIndice;
     int directionTir;
     int numeroImage;
+    int nbExplosion;
 
 };
 
@@ -207,6 +216,14 @@ struct otage
     int file;
     sprite strucSprite;
     int nbOtage;
+};
+
+typedef struct imgMenu imgMenu;
+struct imgMenu
+{
+    SDL_Rect positionImg;
+    SDL_Surface *img;
+    SDL_Surface *ecran;
 };
 
 #endif // CONSTANTES_H_INCLUDED
