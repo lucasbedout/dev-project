@@ -109,12 +109,39 @@ int erreur_chargement_map()
     }
 }
 
-void supr_fichier_erreur()
+void erreur_indef(char msg[])
 {
     FILE* fichier=NULL;
 
+    //ouverture du fichier
+    fichier=fopen("erreur_indef.txt","a");
+
+    //si l'ouverture réussi
+    if (fichier != NULL)
+    {
+        fprintf(fichier,"---------------------ERREUR DU : %s ",datetime());
+        fputs("-----------------------\n",fichier);
+
+        fprintf(fichier,"Message d'erreur : %s \n ",msg);
+
+
+        //on ferme le fichier
+        fclose(fichier);
+    }
+    //si l'ouverture échoue
+    else
+    {
+        printf("Erreur ouverture du fichier erreur_indef.txt");
+    }
+}
+void supr_fichier_erreur()
+{
+    FILE *fichier=NULL,*fichier2=NULL,*fichier3=NULL;
+
     //ouverture du fichier pour le crée ou simplement l'ouvrir pour le suprimer
     fichier=fopen("erreur_image.txt","a");
+    fichier2=fopen("erreur_allocation.txt","a");
+    fichier3=fopen("erreur_indef.txt","a");
 
     //si l'ouverture réussi
     if (fichier != NULL)
@@ -130,14 +157,42 @@ void supr_fichier_erreur()
     {
         printf("Erreur ouverture du fichier erreur_image.txt");
     }
+    if (fichier2 != NULL)
+    {
+        //on ferme le fichier
+        fclose(fichier2);
+
+        //on suprime le fichier
+        remove("erreur_allocation.txt");
+    }
+    //si l'ouverture échoue
+    else
+    {
+        printf("Erreur ouverture du fichier erreur_allocation.txt");
+    }
+    if (fichier3 != NULL)
+    {
+        //on ferme le fichier
+        fclose(fichier3);
+
+        //on suprime le fichier
+        remove("erreur_indef.txt");
+    }
+    //si l'ouverture échoue
+    else
+    {
+        printf("Erreur ouverture du fichier erreur_indef.txt");
+    }
 }
 
 int verif_erreur()
 {
-    FILE* fichier=NULL;
+    FILE *fichier=NULL,*fichier2=NULL,*fichier3=NULL;
 
     //ouverture du fichier
     fichier=fopen("erreur_image.txt","r");
+    fichier2=fopen("erreur_allocation.txt","r");
+    fichier3=fopen("erreur_indef.txt","r");
 
     //si l'ouverture réussi
     if (fichier != NULL)
@@ -146,6 +201,16 @@ int verif_erreur()
         fclose(fichier);
 
         //le fichier a été créer, nous devons donc terminer le programme proprement
+        return 0;
+    }
+    else if(fichier2 != NULL)
+    {
+        fclose(fichier2);
+        return 0;
+    }
+    else if(fichier3 != NULL)
+    {
+        fclose(fichier3);
         return 0;
     }
     //si l'ouverture échoue

@@ -257,6 +257,9 @@ int Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap,int t
        {
            //on retire un point de vie
             Sprite->vie--;
+            //initialisation pour stop le tir
+            helico->imageUtilise.tir.actionEnCour=0;
+            helico->imageUtilise.tir.signeEquation=0;
             //Si la vie est a 0, on indique la date de la mort
             Sprite->tempsMort=tempsActu;
 

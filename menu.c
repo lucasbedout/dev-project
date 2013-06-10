@@ -10,10 +10,9 @@ Date de dernière modifiction : 01/05/2013
 
 */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <SDL/SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "headers/constantes.h"
 #include "headers/menu.h"
@@ -45,20 +44,62 @@ void iniResult(imgMenu *vic,imgMenu *def,SDL_Surface *ecran)
     def->positionImg.y=(ecran->h-def->img->h)/2;
 }
 
-void menuPause(int* continuer,SDL_Event *even)
+void menuPause(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran)
 {
+    //initialisation variable
+    int reprendre=0,quitter=0;
+
+    //initialisation des surfaces
+    SDL_Surface *texteReprendreTTF=NULL,*texteQuitterTTF=NULL,*screen=NULL,*titreTTF=NULL;
+    SDL_Rect posiText={0};
+    imgMenu buton,butonOn;
+    iniBouton(&buton,&butonOn,ecran);
+
+    //remplissage
+    SDL_Color couleur={255,255,255};
+    texteReprendreTTF=TTF_RenderText_Blended(police,"Reprendre",couleur);
+    texteQuitterTTF=TTF_RenderText_Blended(police,"Quitter",couleur);
+    titreTTF=TTF_RenderText_Blended(police,"PAUSE",couleur);
+    //mise en place de la transparence pour le screen
+    screen=SDL_CreateRGBSurface(SDL_HWSURFACE,ecran->w,ecran->h,32,0,0,0,0);
+    SDL_FillRect(screen,NULL,SDL_MapRGB(ecran->format,0,0,0));
+    SDL_SetAlpha(screen,SDL_SRCALPHA,128);
+
     //Initialisation du type d'évennement
     even->type=NULL;
 
-    //Si une touche clavier est enfoncé, alors on stop la pause
-    while(even->type!=SDL_KEYDOWN || even->key.keysym.sym==SDLK_ESCAPE)
+    //mise en place  du fond
+    SDL_BlitSurface(screen,NULL,ecran,&posiText);
+
+    posiText.x=ecran->w/2-titreTTF->w/2;
+    posiText.y=ecran->h/4;
+
+
+    do{
+        SDL_BlitSurface(titreTTF,NULL,ecran,&posiText);
+
+        reprendre=bouton(&buton,&butonOn,ecran->w/3,ecran->h/2,*even,texteReprendreTTF);
+        quitter=bouton(&buton,&butonOn,ecran->w/2,ecran->h/2,*even,texteQuitterTTF);
+
+        SDL_Flip(ecran);
+
         SDL_WaitEvent(even);
-    //Si la touche H est enfoncé, alors on quite le jeu
-    if(even->key.keysym.sym==SDLK_SPACE)
+    }while( (even->type!=SDL_KEYDOWN || even->key.keysym.sym==SDLK_ESCAPE) && (!reprendre && !quitter) );
+    //Si une touche clavier est enfoncé, alors on stop la pause
+
+    //Si la touche espace est enfoncé, alors on quite le jeu
+    if(even->key.keysym.sym==SDLK_SPACE || quitter )
         *continuer=0;
+
+    SDL_FreeSurface(texteReprendreTTF);
+    SDL_FreeSurface(texteQuitterTTF);
+    SDL_FreeSurface(titreTTF);
+    SDL_FreeSurface(screen);
+    SDL_FreeSurface(buton.img);
+    SDL_FreeSurface(butonOn.img);
 }
 
-int bouton(imgMenu *buton,imgMenu *butonSouriOn,int cordonneeX,int cordonneeY,SDL_Event even)
+int bouton(imgMenu *buton,imgMenu *butonSouriOn,int cordonneeX,int cordonneeY,SDL_Event even,SDL_Surface *texte)
 {
    buton->positionImg.x=cordonneeX;
    buton->positionImg.y=cordonneeY;
@@ -77,6 +118,15 @@ int bouton(imgMenu *buton,imgMenu *butonSouriOn,int cordonneeX,int cordonneeY,SD
     else
         SDL_BlitSurface(buton->img, NULL, buton->ecran,&(buton->positionImg));
 
+    //on blit le texte
+    if(texte!=NULL)
+    {
+        SDL_Rect posiText;
+        posiText.x=buton->img->w/2-texte->w/2+buton->positionImg.x;
+        posiText.y=buton->img->h/2-texte->h/2+buton->positionImg.y;
+        SDL_BlitSurface(texte, NULL, buton->ecran,&posiText);
+    }
+
    if(even.type==SDL_MOUSEBUTTONDOWN && even.button.button==SDL_BUTTON_LEFT)
    {
        if( even.button.x>cordonneeX && even.button.x<(cordonneeX+buton->img->w) &&
@@ -87,5 +137,4 @@ int bouton(imgMenu *buton,imgMenu *butonSouriOn,int cordonneeX,int cordonneeY,SD
    }
    else
         return 0;
-
 }

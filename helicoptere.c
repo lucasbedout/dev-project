@@ -281,12 +281,18 @@ int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets t
         return 0;
 }
 
-void gestion_colision_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap)
+int gestion_colision_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap)
 {
     //Si l'hélico se fait toucher par la soucoupe
     if( colisionSpriteHelico(*helico,*ennemie,tilesetsMap,positionMap)==1 && ennemie->vie>0 )
-            //l'hélico est détruit
+       {
+           //l'hélico est détruit
             helico->vie=0;
+
+            return 1;
+       }
+    else
+        return 0;
 }
 
 void gestionColisionSprite(sprite *helico,sprite spriteCible,tilesets tilesetsMap,int *positionMap,SDL_Event even)

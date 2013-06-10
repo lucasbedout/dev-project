@@ -195,7 +195,7 @@ void gestionFileOtage(otage *Otage,sprite *helico,int positionCaserneX,int posit
         Otage->file=0;
     }
     //On regarde si l'otage a été tuer
-    else if(Otage->file==1 && Otage->strucSprite.vie==0)
+    else if(Otage->file==1 && Otage->strucSprite.vie<=0)
     {
         Otage->nbOtage--;
         Otage->file=0;

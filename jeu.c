@@ -24,8 +24,9 @@ Date de dernière modification : 26/03/2013
 #include "headers/ennemie.h"
 #include "headers/erreur.h"
 #include "headers/map.h"
+#include "headers/classement.h"
 
-void jeu (SDL_Surface *ecran)
+void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
 {
     //création d'un evennement
     SDL_Event even;
@@ -33,6 +34,18 @@ void jeu (SDL_Surface *ecran)
     //-------------------VARIABLE BASIQUE--------------------------
     //Sera utilisé pour une boucle ou double boucle
     int i=0,j=0;
+    //--------------------------------------------------------------
+
+    //-------------------VARIABLE TTF--------------------------
+    SDL_Surface *texteVieTTF=NULL,*texteOtageBordTTF=NULL,*texteOtageSauveTTF=NULL,*texteScoreTTF=0;
+    SDL_Color couleur={255,255,255};
+    SDL_Rect positionText={0};
+    char texteVie[10]="3/3 vie",texteOtageBord[20]="0/16 otages a bord",texteOtageSauve[20]="0 otages sauvé",texteScore[20]="Score : 0";
+
+    texteVieTTF=TTF_RenderText_Blended(police,texteVie,couleur);
+    texteOtageBordTTF=TTF_RenderText_Blended(police,texteOtageBord,couleur);
+    texteOtageSauveTTF=TTF_RenderText_Blended(police,texteOtageSauve,couleur);
+    texteScoreTTF=TTF_RenderText_Blended(police,texteScore,couleur);
     //--------------------------------------------------------------
 
     //--------------------CHARGEMENT DE LA MAP---------------------
@@ -127,6 +140,10 @@ void jeu (SDL_Surface *ecran)
     iniExplosion(&explosion,ecran);
     //------------------------------------------------------------
 
+    //----------------VARIABLE CHEAT------------------------------
+    int invincible=config.flagCheat&CHEAT_INVINCIBLE;
+    //------------------------------------------------------------
+
     //activation des touches répétter
     SDL_EnableKeyRepeat(10,10);
 
@@ -137,12 +154,16 @@ void jeu (SDL_Surface *ecran)
     int nbOtageBord=0;
     int nbOtageBase=0;
 
+    //Variable score du joueur
+    int score=0;
+
     tempsJeu.tempsActuel=SDL_GetTicks(); //temps actuel du jeu
+    tempsJeu.tempsDebut=SDL_GetTicks(); //temps du debut du jeu
     //----------------------------------------------------------------
 
     while(continuer && helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord) )
     {
-        option(&continuer,&even);
+        option(&continuer,&even,police,ecran);
 
         deplacementHelico(&helico,&even,&positionMap,&tilesetsMap,map);
 
@@ -153,6 +174,31 @@ void jeu (SDL_Surface *ecran)
 
         //On blitte toute les surfaces et on rafraichie l'image
         affiche_map(map,ecran,tilesetsMap,positionMap);
+
+        //On affiche le texte
+        sprintf(texteVie,"%d /%d vie",helico.vie,VIE_HELICO);
+        positionText.x=0;
+        positionText.y=0;
+        texteVieTTF=TTF_RenderText_Blended(police,texteVie,couleur);
+        SDL_BlitSurface(texteVieTTF,NULL,ecran,&positionText);
+
+        sprintf(texteOtageBord,"%d /%d otage a bord",nbOtageBord,NB_OTAGE_PAR_CASERNE);
+        positionText.x=ecran->w/3;
+        texteOtageBordTTF=TTF_RenderText_Blended(police,texteOtageBord,couleur);
+        SDL_BlitSurface(texteOtageBordTTF,NULL,ecran,&positionText);
+
+        sprintf(texteOtageSauve,"%d otages sauvés",nbOtageBase);
+        positionText.x=ecran->w-texteOtageSauveTTF->w;
+        texteOtageSauveTTF=TTF_RenderText_Blended(police,texteOtageSauve,couleur);
+        SDL_BlitSurface(texteOtageSauveTTF,NULL,ecran,&positionText);
+
+        //on calcul le score
+        score=nbOtageBord*OTAGE_BORD_COEF+nbOtageBase*OTAGE_BASE_COEF;
+        sprintf(texteScore,"Score : %d",score);
+        texteScoreTTF=TTF_RenderText_Blended(police,texteScore,couleur);
+        positionText.x=(ecran->w/2-texteScoreTTF->w/2);
+        positionText.y=texteVieTTF->h*2;
+        SDL_BlitSurface(texteScoreTTF,NULL,ecran,&positionText);
 
         //-------------PARTIE TIR-------------
         //vérifie si l'hélico tir
@@ -329,29 +375,36 @@ void jeu (SDL_Surface *ecran)
         decallement_image_map_hauteurPixel(&bariere,&tilesetsMap,bariere.image[IMAGE1].position.y,bariere.image[IMAGE1].position.x,positionMap,bariere.image[IMAGE1].image);
         //---------------------------------------
 
-        #if INVINCIBLE==0
-        //On regarde enfin si l'hélicoptère c'est fait toucher par un ennemie
-        for(i=0;i<NOMBRE_TANK && ((i*IMPORTANCE_TANK)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
-        {
-            if(Gestion_Vie_helico(&helico,&tank[i],positionMap,tilesetsMap))
-                declenchementExplosion(&explosion,&helico,tank[i]);
-        }
-        for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
-        {
-            if(Gestion_Vie_helico(&helico,&avion[i],positionMap,tilesetsMap))
-                declenchementExplosion(&explosion,&helico,avion[i]);
-        }
-        for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
-        {
-            if(Gestion_Vie_helico(&helico,&soucoupe[i],positionMap,tilesetsMap))
-                declenchementExplosion(&explosion,&helico,soucoupe[i]);
-        }
+        //Si l'hélico n'est pas invincible
+        if(!invincible){
+            //On regarde enfin si l'hélicoptère c'est fait toucher par un ennemie
+            for(i=0;i<NOMBRE_TANK && ((i*IMPORTANCE_TANK)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+            {
+                if(Gestion_Vie_helico(&helico,&tank[i],positionMap,tilesetsMap))
+                    declenchementExplosion(&explosion,&helico,tank[i]);
+            }
+            for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+            {
+                if(Gestion_Vie_helico(&helico,&avion[i],positionMap,tilesetsMap))
+                    declenchementExplosion(&explosion,&helico,avion[i]);
+            }
+            for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+            {
+                if(gestion_colision_helico(&helico,&soucoupe[i],positionMap,tilesetsMap))
+                    declenchementExplosion(&explosion,&helico,soucoupe[i]);
+            }
 
-        if(helico.imageUtilise.tir.nbExplosion>0)
-            afficheExplosion(&helico,explosion,tilesetsMap,positionMap);
-        #endif
+            if(helico.imageUtilise.tir.nbExplosion>0)
+                afficheExplosion(&helico,explosion,tilesetsMap,positionMap);
+        }
 
         SDL_Flip(ecran);
+
+        //liberation du texte qui seront ensuite réatribué
+        SDL_FreeSurface(texteOtageBordTTF);
+        SDL_FreeSurface(texteVieTTF);
+        SDL_FreeSurface(texteOtageSauveTTF);
+        SDL_FreeSurface(texteScoreTTF);
 
         //Mise en place des FPS
         tempsJeu.tempsActuel=SDL_GetTicks();
@@ -361,16 +414,46 @@ void jeu (SDL_Surface *ecran)
         }
     }
 
+    //On stop la répétition des touches
+    SDL_EnableKeyRepeat(0,0);
+
+    //création de la surface qui va faire office de fond transparent
+    SDL_Surface *screen;
+    SDL_Rect posiScreen={0};
+    screen=SDL_CreateRGBSurface(SDL_HWSURFACE,ecran->w,ecran->h,32,0,0,0,0);
+    SDL_FillRect(screen,NULL,SDL_MapRGB(ecran->format,0,0,0));
+    SDL_SetAlpha(screen,SDL_SRCALPHA,128);
+    SDL_BlitSurface(screen,NULL,ecran,&posiScreen);
+    SDL_FreeSurface(screen);
+    //Fin de la surface qui fait office de fond transparent
+
     //On affiche le résultat, victoire si l'hélico est encore vivant, defaite si l'hélico est détruit
     if(helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord)==0)
+    {
         SDL_BlitSurface(victoire.img,NULL,ecran,&victoire.positionImg);
+        //On fonction du temps on ajoute des points au score. Plus le temps est court et plus il y a de point ajouter
+        score+=(1/(tempsJeu.tempsActuel-tempsJeu.tempsDebut))*COEF_TMP_VIC+helico.vie*COEF_VIE_VIC;
+    }
     else if(helico.vie<=0)
         SDL_BlitSurface(defaite.img,NULL,ecran,&defaite.positionImg);
 
     if( (helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord)==0) || helico.vie<=0 ){
-    SDL_Flip(ecran);
-    while(even.type!=SDL_KEYUP)
-        SDL_WaitEvent(&even);
+        SDL_Flip(ecran);
+        //pause de 1 seconde du programme pour que le joueur voit qu'il a gagner ou perdu avant de continuer
+        SDL_Delay(1000);
+        //on initialise le type d'evennement puis on attends que le joeur appuis sur une touche du clavier pour continuer
+        even.type=NULL;
+        while(even.type!=SDL_KEYUP)
+            SDL_WaitEvent(&even);
+    }
+
+    //On verifie si un new score a été produit
+    if(newScoreClmt(score))
+    {
+        char name[20]="";
+        sprintf(name,"%s",enterName(score,police,ecran));
+        insertNewScore(name,score);
+        affClmt(ecran,police,config.flagCheat);
     }
 
     //on libere les images chargeren mémoire
@@ -426,7 +509,7 @@ void jeu (SDL_Surface *ecran)
 
 }
 
-void option(int* continuer,SDL_Event *even)
+void option(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran)
 {
     SDL_PollEvent(even);
 
@@ -440,7 +523,7 @@ void option(int* continuer,SDL_Event *even)
                 switch(even->key.keysym.sym)
                 {
                     case SDLK_ESCAPE:
-                        menuPause(continuer,even);
+                        menuPause(continuer,even,police,ecran);
                         break;
                 }
                 break;

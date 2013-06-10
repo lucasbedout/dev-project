@@ -18,6 +18,8 @@ void erreur_image(char nomFichier[]);
 void erreur_allocation(char endroitAllouer[]);
 //Verifie si le fichier map, si il n'existe pas on l'indique et crée un fichier
 int erreur_chargement_map();
+//Permet de créer un fichier d'erreur et indique le message d'erreur souhaité
+void erreur_indef(char msg[]);
 //suprime le fichier d'erreur
 void supr_fichier_erreur();
 //Verifie si le fichier erreur a été ouvert ou créer

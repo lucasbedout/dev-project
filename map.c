@@ -198,7 +198,7 @@ int taille_map()
     FILE* fichier=NULL;
 
     //ouverture du fichier
-    fichier=fopen("map.txt","r");
+    fichier=fopen(FICHIER_MAP,"r");
 
     //si l'ouverture échoue
     if (fichier == NULL)
@@ -282,7 +282,7 @@ int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap)
 
         //chargement de la map
         FILE* fichierMap=NULL;
-        fichierMap=fopen("map.txt","r");
+        fichierMap=fopen(FICHIER_MAP,"r");
 
         const int ascii=48;
         int caractereAscii=0;

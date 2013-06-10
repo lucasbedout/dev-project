@@ -14,11 +14,10 @@ Date de dernière modification : 05/04/2013
 
 //Activé ou non le mode designer
 #define MODE_DESIGNER 0
-//Pour que l'hélico soit invincible
-#define INVINCIBLE 1
 
 //--------------------NOM FICHIER ECRAN/MAP--------------
 #define NOM_FICHIER_MENU "img/MenuEcran.png"
+#define NOM_FICHIER_CLMT "img/classement.png"
 #define NOM_FICHIER_VICTOIRE "img/MenuResult/Victoire.png"
 #define NOM_FICHIER_DEFAITE "img/MenuResult/Defaite.png"
 
@@ -28,6 +27,10 @@ Date de dernière modification : 05/04/2013
 
 #define NOM_FICHIER_EXPLOSION "img/explosion.png"
 #define NB_EXPLOSION 5
+
+#define NOM_FONT "font/spaceranger.ttf"
+#define NOM_BOUTON_NORMAL "img/Bouton/Buton.png"
+#define NOM_BOUTON_ON "img/Bouton/ButonOn.png"
 
 #define TAILLE_MAP_PREDEFINIE 50
 //-------------------------------------------------------
@@ -125,11 +128,43 @@ Date de dernière modification : 05/04/2013
 #define VIE_OTAGE 1
 //-----------------------------------------------------------
 
+//----------------------SCORE COEF------------
+#define OTAGE_BORD_COEF 100
+#define OTAGE_BASE_COEF 300
+#define COEF_TMP_VIC 10000000
+#define COEF_VIE_VIC 1000
+//---------------------------------------------
+
+//----------------------POLICE------------
+#define TAILLE_POLICE 20
+#define NOM_FONT "font/spaceranger.ttf"
+//----------------------------------------
+
 //----------------------TEMPS ECART TABLEAU TEMPS------------
 #define TMP_DECAL_TAB_TANK 4
 #define TMP_DECAL_TAB_AVION 4
 #define TMP_DECAL_TAB_SOUCOUPE 2
 //-----------------------------------------------------------
+
+//----------------------FLAG SCREEN------------
+#define SCREEN_800x600 1
+#define SCREEN_1024x768 2
+#define SCREEN_1280x800 4
+#define SCREEN_1440x900 8
+#define SCREEN_AUTO 16
+#define SCREEN_FULL 32
+//---------------------------------------------
+
+//----------------------FLAG CHEAT-------------
+#define CHEAT_INVINCIBLE 1
+#define CHEAT_YANN 2
+//---------------------------------------------
+
+//----------------------NOM FICHIER JEU-------------
+#define FICHIER_CONFIG "all.txt"
+#define FICHIER_CLASSEMENT "classement.sav"
+#define FICHIER_MAP "map.txt"
+//---------------------------------------------
 
 //nombre total d'otage a sauvé dans le jeu
 #define NB_TOTAL_OTAGE NB_CASERNE*NB_OTAGE_PAR_CASERNE
@@ -148,6 +183,7 @@ struct temps
 {
     int tempsPrecedent[TAILLE_TABLEAU_TEMPS];
     int tempsActuel;
+    int tempsDebut;
 };
 
 //CoefDirecteur et coefIndice sont les constantes de l'équation y=ax+b du tir. A est le coefDirecteur et B est le coefIndice.
@@ -224,6 +260,13 @@ struct imgMenu
     SDL_Rect positionImg;
     SDL_Surface *img;
     SDL_Surface *ecran;
+};
+
+typedef struct conf conf;
+struct conf
+{
+    int flagCheat;
+    int flagScreen;
 };
 
 #endif // CONSTANTES_H_INCLUDED

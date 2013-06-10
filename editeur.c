@@ -88,8 +88,6 @@ int** declaration_tableau_map(SDL_Surface *ecran,tilesets imageMap)
     n=ecran->h/imageMap.infoImage[0].image->h;
     m=ecran->w/imageMap.infoImage[0].image->w;
 
-    test_valeur(ecran->h,"IMAGE");
-
     //-------------------ALLOCATION TABLEAU DYNAMIQUE 2D--------------
 
         //allocation dynamique a 1 dimension
@@ -284,7 +282,7 @@ void save_map(int** map,SDL_Surface *ecran,tilesets imageMap,SDL_Event *even,Lis
          FILE* fichier=NULL;
 
         //ouverture du fichier en écriture/lecture et écrasement au préalable du fichier
-        fichier=fopen("map.txt","w+");
+        fichier=fopen(FICHIER_MAP,"w+");
 
         //si l'ouverture réussi
         if (fichier != NULL)

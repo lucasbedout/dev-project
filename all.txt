@@ -1,0 +1,2 @@
+Dimention=1
+Cheat=0

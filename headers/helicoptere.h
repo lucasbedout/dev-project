@@ -26,8 +26,8 @@ void GestionColision(sprite *helico,int** map,tilesets *tilesetsMap,int position
 int atterrissageHelico(sprite *helico,int** map,tilesets *tilesetsMap,int positionActu);
 //Gestion de la vie de l'hélicoptère. Retourne 1 si l'hélico est toucher, retourne 0 si il ne l'est pas.
 int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap);
-//gestion de la vie de l'hélico si quelque chose le touche
-void gestion_colision_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap);
+//gestion de la vie de l'hélico si quelque chose le touche. Retourne 1 si il y a colision sinon retourne 0.
+int gestion_colision_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap);
 //Permet de faire revenir la position de l'hélico a son origine si il y a une colisition
 void gestionColisionSprite(sprite *helico,sprite spriteCible,tilesets tilesetsMap,int *positionMap,SDL_Event even);
 
