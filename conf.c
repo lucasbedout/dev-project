@@ -20,16 +20,17 @@ Date de dernière modifiction : 09/06/2013
 #include "headers/menu.h"
 #include "headers/conf.h"
 
-int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
+int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn,systEfSound *sound)
 {
-    SDL_Surface *texteCheatTTF=NULL,*texteEcranDimTTF=NULL,*texteOnTTF=NULL,*texteOffTTF=NULL,*texteDimEcTTF=NULL,*titreTTF=NULL;
+    SDL_Surface *texteCheatTTF=NULL,*texteEcranDimTTF=NULL,*texteOnTTF=NULL,*texteOffTTF=NULL,*texteDimEcTTF=NULL,*titreTTF=NULL,*texteLevelTFF=NULL,*texteLvlTFF=NULL;
     SDL_Surface *imgFond=NULL,*restartTTF=NULL,*exitTTF=NULL,*clearScreen=NULL,*fullScreenTTF=NULL,*texteYannTTF=NULL,*titreCheatTTF=NULL,*titreGeneralTTF=NULL;
+    SDL_Surface *musiqueTTF=NULL,*effetTTF=NULL;
     SDL_Color couleur={255,255,255};
     SDL_Rect positionText={0};
     SDL_Event even;
     conf config;
-    int done=0,restart=0,ecranDim=1,invin=0,fullscreen=0,yann=0;
-    char texteEcranDim[20]="800x600";
+    int done=0,restart=0,ecranDim=1,invin=0,fullscreen=0,yann=0,level=2,soundFlag=3,musique=1,effet=1;
+    char texteEcranDim[20]="800x600",texteLevel[20]="Normal";
 
     //Lecture du fichier config et initialisation des variables de configuration
     config=lec_conf();
@@ -37,6 +38,9 @@ int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
     fullscreen=config.flagScreen&SCREEN_FULL;
     invin=config.flagCheat&CHEAT_INVINCIBLE;
     yann=config.flagCheat&CHEAT_YANN;
+    level=config.level;
+    musique=config.flagSound&FLAG_MUSIQUE;
+    effet=config.flagSound&FLAG_EFFET;
     //Fin de l'initialisation
 
     imgFond=IMG_Load(NOM_FICHIER_CLMT);
@@ -50,14 +54,17 @@ int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
     titreGeneralTTF=TTF_RenderText_Blended(police,"Parametres généraux",couleur);
     //Et on remet la police a la normal
     TTF_SetFontStyle(police,TTF_STYLE_NORMAL);
-    texteCheatTTF=TTF_RenderText_Blended(police,"Invinsibilité :",couleur);
+    texteCheatTTF=TTF_RenderText_Blended(police,"Invincibilité :",couleur);
     texteOnTTF=TTF_RenderText_Blended(police,"ON",couleur);
     texteOffTTF=TTF_RenderText_Blended(police,"OFF",couleur);
-    texteDimEcTTF=TTF_RenderText_Blended(police,"Dimention ecran :",couleur);
+    texteDimEcTTF=TTF_RenderText_Blended(police,"Dimension ecran :",couleur);
+    texteLvlTFF=TTF_RenderText_Blended(police,"Niveau :",couleur);
     restartTTF=TTF_RenderText_Blended(police,"Restart",couleur);
     exitTTF=TTF_RenderText_Blended(police,"Quitter",couleur);
     fullScreenTTF=TTF_RenderText_Blended(police,"Plein écran :",couleur);
     texteYannTTF=TTF_RenderText_Blended(police,"Yann is everywhere :",couleur);
+    musiqueTTF=TTF_RenderText_Blended(police,"Musique :",couleur);
+    effetTTF=TTF_RenderText_Blended(police,"Effet sonore :",couleur);
 
     //On crée une surface noir qui fera office de "clear ecran"
     clearScreen=SDL_CreateRGBSurface(SDL_HWSURFACE,ecran->w,ecran->h,32,0,0,0,0);
@@ -69,8 +76,10 @@ int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
     {
         SDL_WaitEvent(&even);
 
-        if(even.type==SDL_KEYDOWN && even.key.keysym.sym==SDLK_ESCAPE)
+        if(even.type==SDL_KEYDOWN && even.key.keysym.sym==SDLK_ESCAPE){
+            Mix_PlayChannel( -1, sound->touche, 0 );
             done=1;
+        }
 
         positionText.x=0;
         positionText.y=0;
@@ -90,50 +99,101 @@ int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
         SDL_BlitSurface(titreGeneralTTF,NULL,ecran,&positionText);
 
         positionText.x=ecran->w/2-titreCheatTTF->w/2;
-        positionText.y=ecran->h/2-texteCheatTTF->h;
+        positionText.y=ecran->h/1.5-texteCheatTTF->h;
         SDL_BlitSurface(titreCheatTTF,NULL,ecran,&positionText);
 
         //on blitte le texte et le bouton du cheat invincibilité
         positionText.x=ecran->w/4;
-        positionText.y=ecran->h/2;
+        positionText.y=ecran->h/1.5;
         SDL_BlitSurface(texteCheatTTF,NULL,ecran,&positionText);
-        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/2,even, (invin) ? texteOnTTF : texteOffTTF))
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/1.5,even, (invin) ? texteOnTTF : texteOffTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
             invin= !(invin);
+        }
 
         //On blitte le texte et le bouton des dimentions de l'écran
         strcpy(texteEcranDim,valScreen(ecranDim));
         positionText.x=ecran->w/4;
-        positionText.y=ecran->h/3;
+        positionText.y=ecran->h/4+titreGeneralTTF->h*2;
         SDL_BlitSurface(texteDimEcTTF,NULL,ecran,&positionText);
         texteEcranDimTTF = TTF_RenderText_Blended(police,texteEcranDim,couleur);
-        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/3,even,texteEcranDimTTF))
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/4+titreGeneralTTF->h*2,even,texteEcranDimTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
             ecranDim=(ecranDim<SCREEN_AUTO) ? ecranDim*2 : 1;
+        }
+
+        //On blitte le texte et le bouton des niveau de difficulté du jeu
+        strcpy(texteLevel,valLevel(level));
+        positionText.x=ecran->w/4;
+        positionText.y=ecran->h/4+texteEcranDimTTF->h*4;
+        SDL_BlitSurface(texteLvlTFF,NULL,ecran,&positionText);
+        texteLevelTFF = TTF_RenderText_Blended(police,texteLevel,couleur);
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/4+texteEcranDimTTF->h*4,even,texteLevelTFF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
+            level=(level<LEVEL_LEGENDE) ? level+1 : 0;
+        }
 
         //on blitte le texte et le bouton pour le full screen
         positionText.x=ecran->w/4;
         positionText.y=ecran->h/4;
         SDL_BlitSurface(fullScreenTTF,NULL,ecran,&positionText);
-        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/4,even, (fullscreen) ? texteOnTTF : texteOffTTF))
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/4,even, (fullscreen) ? texteOnTTF : texteOffTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
             fullscreen= !(fullscreen);
+        }
 
         //on blitte le texte et le bouton pour le cheat everywhere
         positionText.x=ecran->w/4;
-        positionText.y=ecran->h/2+texteCheatTTF->h*2;
+        positionText.y=ecran->h/1.5+texteCheatTTF->h*2;
         SDL_BlitSurface(texteYannTTF,NULL,ecran,&positionText);
-        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/2+texteCheatTTF->h*2,even, (yann) ? texteOnTTF : texteOffTTF))
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/1.5+texteCheatTTF->h*2,even, (yann) ? texteOnTTF : texteOffTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
             yann= !(yann);
+        }
+
+         //on blitte le texte et le bouton de la musique
+        positionText.x=ecran->w/4;
+        positionText.y=ecran->h/4+texteEcranDimTTF->h*6;
+        SDL_BlitSurface(musiqueTTF,NULL,ecran,&positionText);
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/4+texteEcranDimTTF->h*6,even, (musique) ? texteOnTTF : texteOffTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
+            musique= !(musique);
+        }
+
+        //on blitte le texte et le bouton de l'effet sonore
+        positionText.x=ecran->w/4;
+        positionText.y=ecran->h/4+texteEcranDimTTF->h*8;
+        SDL_BlitSurface(effetTTF,NULL,ecran,&positionText);
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h/4+texteEcranDimTTF->h*8,even, (effet) ? texteOnTTF : texteOffTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
+            effet= !(effet);
+        }
 
         //On blitte le bouton restart et le bouton quitter
-        if(bouton(&buton,&butonOn,ecran->w/4,ecran->h-buton.img->h*2,even,restartTTF))
+        if(bouton(&buton,&butonOn,ecran->w/4,ecran->h-buton.img->h*2,even,restartTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
             restart=1;
-        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h-buton.img->h*2,even,exitTTF))
+        }
+        if(bouton(&buton,&butonOn,ecran->w/2,ecran->h-buton.img->h*2,even,exitTTF)){
+            if(config.flagSound&FLAG_EFFET)
+                Mix_PlayChannel( -1, sound->button, 0 );
             done=1;
+            }
 
         //On flip l'écran
         SDL_Flip(ecran);
 
         //on libére la mémoire alouer pour ensuite pourvoir realoué
         SDL_FreeSurface(texteEcranDimTTF);
+        SDL_FreeSurface(texteLevelTFF);
     }
 
     SDL_FreeSurface(clearScreen);
@@ -142,11 +202,14 @@ int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
     SDL_FreeSurface(texteOnTTF);
     SDL_FreeSurface(texteOffTTF);
     SDL_FreeSurface(texteDimEcTTF);
+    SDL_FreeSurface(texteLvlTFF);
     SDL_FreeSurface(titreTTF);
     SDL_FreeSurface(titreCheatTTF);
     SDL_FreeSurface(titreGeneralTTF);
     SDL_FreeSurface(fullScreenTTF);
     SDL_FreeSurface(texteYannTTF);
+    SDL_FreeSurface(effetTTF);
+    SDL_FreeSurface(musiqueTTF);
     SDL_FreeSurface(restartTTF);
     SDL_FreeSurface(exitTTF);
 
@@ -157,6 +220,9 @@ int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn)
         config.flagScreen+=(fullscreen) ? SCREEN_FULL : 0;
         config.flagCheat=invin;
         config.flagCheat+=(yann) ? CHEAT_YANN  : 0;
+        config.level=level;
+        soundFlag=musique*FLAG_MUSIQUE+effet*FLAG_EFFET;
+        config.flagSound=soundFlag;
         modif_conf(config);
     }
 
@@ -179,6 +245,22 @@ char* valScreen(int ecranDim)
         return "Undefined size";
 }
 
+char* valLevel(int level)
+{
+    if(level==LEVEL_PEACEFULL)
+        return "PEACEFULL";
+    else if(level==LEVEL_EASY)
+        return "EASY";
+    else if(level==LEVEL_NORMAL)
+        return "NORMAL";
+    else if(level==LEVEL_HARD)
+        return "HARD";
+    else if(level==LEVEL_LEGENDE)
+        return "LEGENDE";
+    else
+        return "UNDEFINED";
+}
+
 void verif_conf()
 {
     FILE* fichier=NULL;
@@ -191,7 +273,7 @@ void verif_conf()
     {
         fichier=fopen(FICHIER_CONFIG,"w");
 
-        fputs("Dimention=1\nCheat=0",fichier);
+        fputs("Dimention=1\nCheat=0\nNiveau=2\nMusique=3",fichier);
     }
     //on ferme le fichier
     fclose(fichier);
@@ -207,7 +289,7 @@ conf lec_conf()
 
     conf parametreConf;
 
-    fscanf(fichier,"Dimention=%d\nCheat=%d",&parametreConf.flagScreen,&parametreConf.flagCheat);
+    fscanf(fichier,"Dimention=%d\nCheat=%d\nNiveau=%d\nMusique=%d",&parametreConf.flagScreen,&parametreConf.flagCheat,&parametreConf.level,&parametreConf.flagSound);
 
     //on ferme le fichier
     fclose(fichier);
@@ -252,7 +334,7 @@ void modif_conf(conf config)
     //ouverture du fichier
     fichier=fopen(FICHIER_CONFIG,"w+");
 
-    fprintf(fichier,"Dimention=%d\nCheat=%d",config.flagScreen,config.flagCheat);
+    fprintf(fichier,"Dimention=%d\nCheat=%d\nNiveau=%d\nMusique=%d",config.flagScreen,config.flagCheat,config.level,config.flagSound);
 
     fclose(fichier);
 }

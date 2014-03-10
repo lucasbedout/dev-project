@@ -155,16 +155,16 @@ void deplacementOtageVersHelico(otage *Otage,sprite *helico,sprite *bariere,int*
             {
                 Otage->strucSprite.image[IMAGE1].position.x++;
                 Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
-                                                            hauteur_sol_max(map,tilesetsMap,
-                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
+                                                            hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,
+                                                            Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
                 Otage->strucSprite.imageUtilise.direction=DROITE;
             }
             else if( (positionMap<Otage->strucSprite.image[IMAGE1].position.x) )
             {
                 Otage->strucSprite.image[IMAGE1].position.x--;
                 Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
-                                                            hauteur_sol_max(map,tilesetsMap,
-                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
+                                                            hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,
+                                                            Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
                 Otage->strucSprite.imageUtilise.direction=GAUCHE;
             }
         }
@@ -172,8 +172,8 @@ void deplacementOtageVersHelico(otage *Otage,sprite *helico,sprite *bariere,int*
         {
             Otage->strucSprite.image[IMAGE1].position.x+=colisionBariere(&Otage->strucSprite,bariere,tilesetsMap);
             Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
-                                                            hauteur_sol_max(map,tilesetsMap,
-                                                            Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
+                                                            hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,
+                                                            Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
         }
         else
         {
@@ -219,16 +219,16 @@ void deplacementOtageVersBase(otage *Otage,sprite *helico,sprite *base,int** map
         {
             Otage->strucSprite.image[IMAGE1].position.x++;
             Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
-                                                        hauteur_sol_max(map,tilesetsMap,
-                                                        Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
+                                                        hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,
+                                                        Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
             Otage->strucSprite.imageUtilise.direction=DROITE;
         }
         else if( (base->image[IMAGE1].position.x<Otage->strucSprite.image[IMAGE1].position.x) )
         {
             Otage->strucSprite.image[IMAGE1].position.x--;
             Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-Otage->strucSprite.image[IMAGE1].image->h-
-                                                        hauteur_sol_max(map,tilesetsMap,
-                                                        Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
+                                                        hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,Otage->strucSprite.image[IMAGE1].position.x,
+                                                        Otage->strucSprite.image[IMAGE1].position.x+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w);
             Otage->strucSprite.imageUtilise.direction=GAUCHE;
         }
         else

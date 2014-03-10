@@ -23,7 +23,15 @@ Date de dernière modification : 05/04/2013
 
 #define NOM_FICHIER_MAP_TERRE "img/Tilesets/terre.png"
 #define NOM_FICHIER_MAP_CIEL "img/Tilesets/ciel.png"
-#define NOM_FICHIER_MAP_ROUGE "img/Tilesets/scrolling.png"
+#define NOM_FICHIER_MAP_CIEL2 "img/Tilesets/ciel2.png"
+#define NOM_FICHIER_MAP_NUAGE1 "img/Tilesets/cielnuage1.png"
+#define NOM_FICHIER_MAP_NUAGE2 "img/Tilesets/cielnuage2.png"
+#define NOM_FICHIER_MAP_NUAGE3 "img/Tilesets/cielnuage3.png"
+#define NOM_FICHIER_MAP_DESERT1 "img/Tilesets/desert1.png"
+#define NOM_FICHIER_MAP_DESERT2 "img/Tilesets/desert2.png"
+#define NOM_FICHIER_MAP_DESERT3 "img/Tilesets/desert3.png"
+#define NOM_FICHIER_MAP_DESERT4 "img/Tilesets/desert4.png"
+#define NOM_FICHIER_MAP_TERRE2 "img/Tilesets/terre2.png"
 
 #define NOM_FICHIER_EXPLOSION "img/explosion.png"
 #define NB_EXPLOSION 5
@@ -32,7 +40,7 @@ Date de dernière modification : 05/04/2013
 #define NOM_BOUTON_NORMAL "img/Bouton/Buton.png"
 #define NOM_BOUTON_ON "img/Bouton/ButonOn.png"
 
-#define TAILLE_MAP_PREDEFINIE 50
+#define TAILLE_MAP_PREDEFINIE 250
 //-------------------------------------------------------
 
 //-----------------NOM FICHIER HELICO----------------------
@@ -75,8 +83,8 @@ Date de dernière modification : 05/04/2013
 #define NOM_FICHIER_CASERNE2 "img/caserne2.png"
 #define NOM_FICHIER_BARIERE "img/bariere.png"
 
-#define ECART_BASE_CASERNE 25
-#define ECART_CASERNE_CASERNE 25
+#define ECART_BASE_CASERNE 35
+#define ECART_CASERNE_CASERNE 30
 //---------------------------------------------------------
 
 //-----------------NOM FICHIER OTAGE--------------------
@@ -133,6 +141,7 @@ Date de dernière modification : 05/04/2013
 #define OTAGE_BASE_COEF 300
 #define COEF_TMP_VIC 10000000
 #define COEF_VIE_VIC 1000
+#define COEF_DIFFICULT 1000
 //---------------------------------------------
 
 //----------------------POLICE------------
@@ -160,11 +169,39 @@ Date de dernière modification : 05/04/2013
 #define CHEAT_YANN 2
 //---------------------------------------------
 
-//----------------------NOM FICHIER JEU-------------
+//----------------------LEVEL------------------
+#define LEVEL_PEACEFULL 0
+#define LEVEL_EASY 1
+#define LEVEL_NORMAL 2
+#define LEVEL_HARD 3
+#define LEVEL_LEGENDE 4
+//---------------------------------------------
+
+//----------------------NOM FICHIER JEU--------
 #define FICHIER_CONFIG "all.txt"
 #define FICHIER_CLASSEMENT "classement.sav"
 #define FICHIER_MAP "map.txt"
 //---------------------------------------------
+
+//----------------------MUSIQUE-------------
+#define SYSTEME_BUTTON "MUSIC/SE/button.wav"
+#define SYSTEME_ESCAP "MUSIC/SE/escap.wav"
+#define SYSTEME_APLAUSE "MUSIC/SE/aplause.wav"
+
+#define EFFECT_AVION "MUSIC/ME/avion.wav"
+#define EFFECT_TANK "MUSIC/ME/tank.wav"
+#define EFFECT_SOUCOUPE "MUSIC/ME/soucoupe.wav"
+#define EFFECT_HELICO "MUSIC/ME/helico.wav"
+#define EFFECT_SHOOT "MUSIC/ME/shoot.wav"
+#define EFFECT_EXPLOSION "MUSIC/ME/explosion.wav"
+
+#define MUSIQUE_MENU "MUSIC/BGM/3G_Bateau.wav"
+//------------------------------------------
+
+//----------------------FLAG MUSIQUE--------
+#define FLAG_MUSIQUE 1
+#define FLAG_EFFET 2
+//------------------------------------------
 
 //nombre total d'otage a sauvé dans le jeu
 #define NB_TOTAL_OTAGE NB_CASERNE*NB_OTAGE_PAR_CASERNE
@@ -174,6 +211,9 @@ Date de dernière modification : 05/04/2013
 
 #define TEMPS_POSE 50
 #define TAILLE_TABLEAU_TEMPS 40
+
+//blibliothèque sound
+#include <SDL_mixer.h>
 
 enum {IMAGE1,IMAGE2,IMAGE3,IMAGE4,IMAGE5,IMAGE6,IMAGE7,IMAGE8,IMAGE9,IMAGE10};
 enum {GAUCHE,DROITE,BAS,HAUT,FACE};
@@ -229,6 +269,7 @@ struct sprite
     imageActu imageUtilise;
     int vie;
     int tempsMort;
+    int timeRunSound;
 };
 
 typedef struct imageTileset imageTileset;
@@ -242,7 +283,7 @@ struct imageTileset
 typedef struct tilesets tilesets;
 struct tilesets
 {
-    imageTileset    infoImage[10];
+    imageTileset    infoImage[50];
     int             nbTilesets;
 };
 
@@ -267,6 +308,17 @@ struct conf
 {
     int flagCheat;
     int flagScreen;
+    int flagSound;
+    int level;
 };
+
+typedef struct systEfSound systEfSound;
+struct systEfSound
+{
+    Mix_Chunk *button;
+    Mix_Chunk *touche;
+    Mix_Chunk *aplause;
+};
+
 
 #endif // CONSTANTES_H_INCLUDED

@@ -107,7 +107,7 @@ void animationTir (sprite *spriteAnime,tilesets *tilesetsMap,int positionMap)
     }
 }
 
-int tir(sprite *typeSprite,tilesets tilesetsMap)
+int tir(sprite *typeSprite,tilesets tilesetsMap,Mix_Chunk **soundTir)
 {
     //le i sera utilisé dans une boucle for plus tard dans cette fonction. Les différences seront comparait dans l'algo pour fluidé la trajectoire
     int differenceX=0,differenceY=0;
@@ -134,6 +134,10 @@ int tir(sprite *typeSprite,tilesets tilesetsMap)
             {typeSprite->imageUtilise.tir.signeEquation=negatif;}
             else
             {typeSprite->imageUtilise.tir.signeEquation=positif;}
+
+            //on déclenche le son du tir
+            if(*soundTir!=NULL)
+                Mix_PlayChannel( -1, *soundTir, 0 );
         }
 
         if( typeSprite->imageUtilise.tir.coefDirecteur<17 && typeSprite->imageUtilise.tir.coefDirecteur>-17 ){
@@ -291,11 +295,11 @@ int hotage_monte_helico(sprite *helico,otage *Otage, int** map,tilesets *tileset
     tailleOtageY=Otage->strucSprite.image[IMAGE1].image->h;
 
     //la taille de l'hélico de l'image est divisé par deux car l'image de l'hélico est blité au centre de la fenetre
-    tailleHelicoX=(helico->image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w)/2;
-    tailleHelicoY=helico->image[IMAGE1].image->h;
+    tailleHelicoX=(helico->image[IMAGE5].image->w/tilesetsMap->infoImage[0].image->w)/2;
+    tailleHelicoY=helico->image[IMAGE5].image->h;
 
-    //on regarde si l'hélico est attérie et si un otage "touche" l'hélico
-    if(1==atterrissageHelico(helico,map,tilesetsMap,positionActu) && ( ( ( (otagePosX+tailleOtageX)>=(helicoX-tailleHelicoX) ) && ( otagePosX<=(helicoX+tailleHelicoX) ) ) &&
+    //on regarde si l'hélico est attérie et si un otage "touche" l'hélico ( 2 et 6 son adapter pour augmenté la colision en fonction de l'image de l'hélico
+    if(1==atterrissageHelico(helico,map,tilesetsMap,positionActu) && ( ( ( (otagePosX+tailleOtageX)>=(helicoX-tailleHelicoX/2) ) && ( otagePosX<=(helicoX+tailleHelicoX/6) ) ) &&
                                                                     ( ( ( (otagePosY+tailleOtageY)>= helicoY) && ( otagePosY<=( helicoY+tailleHelicoY ) ) ) ) ) )
     {
         //on rajoute un otage
@@ -317,9 +321,10 @@ void hotage_dessend_helico(int positionMap,int *nbOtageBord,int *nbOtageBase,ota
         //fonction a faire pour dirigé les otages vers la base
         *nbOtageBord-=1;
         Otage->file=1;
-        Otage->strucSprite.image[IMAGE1].position.x=positionMap;
+        Otage->strucSprite.image[IMAGE1].position.x=positionMap-helico->image[IMAGE1].image->w/2/tilesetsMap->infoImage[IMAGE1].image->w;
         Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.image[IMAGE1].position.y=Otage->strucSprite.imageUtilise.positionEcran->h-
-                                                    hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,positionMap,(positionMap+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )-Otage->strucSprite.image[IMAGE1].image->h;
+                                                    hauteur_sol_max(map,tilesetsMap,Otage->strucSprite.imageUtilise.positionEcran,positionMap,
+                                                                    (positionMap+Otage->strucSprite.image[IMAGE1].image->w/tilesetsMap->infoImage[0].image->w) )-Otage->strucSprite.image[IMAGE1].image->h;
 
     }
     //Si l'otage est rentrer dans la base
@@ -486,8 +491,12 @@ void iniExplosion(imgMenu *explosion,SDL_Surface *ecran)
     explosion->positionImg.y=0;
 }
 
-void declenchementExplosion(imgMenu *explosion,sprite *spriteToucher, sprite spriteTirreur)
+void declenchementExplosion(imgMenu *explosion,sprite *spriteToucher, sprite spriteTirreur,Mix_Chunk **soundTir)
 {
+    //on déclenche le son du tir
+    if(*soundTir!=NULL)
+        Mix_PlayChannel( -1, *soundTir, 0 );
+
     spriteToucher->imageUtilise.tir.nbExplosion=NB_EXPLOSION;
     explosion->positionImg.x=spriteTirreur.imageUtilise.tir.positionTir.x;
     explosion->positionImg.y=spriteTirreur.imageUtilise.tir.positionTir.y;
@@ -512,4 +521,25 @@ int Helico_ecrase_otage(sprite helico,sprite Otage,int** map,tilesets tilesetsMa
     {
         return 0;
     }
+}
+
+void jaugeVie(sprite spriteCible,int vieTotal,int vieActu,int largueurTile,int positionMap)
+{
+    //bare de 50 pixel max en largeur
+    int longueurBare=100*vieActu/vieTotal,prctVie=vieActu*1.0/vieTotal*100.0;
+
+    SDL_Surface *bareVie=NULL;
+    SDL_Rect posiBare={0};
+
+    bareVie=SDL_CreateRGBSurface(SDL_HWSURFACE,longueurBare,10,32,0,0,0,0);
+    SDL_FillRect(bareVie,NULL,SDL_MapRGB(spriteCible.imageUtilise.positionEcran->format,2.55*(100-prctVie),2.55*prctVie,0));
+
+    //calcul des coordonnées de la bare
+    posiBare.x=(spriteCible.image[0].position.x-positionMap)*largueurTile+spriteCible.imageUtilise.positionEcran->w/2+spriteCible.image[0].image->w/2-bareVie->w/2;
+    posiBare.y=spriteCible.image[0].position.y-bareVie->h*2;
+
+    SDL_BlitSurface(bareVie, NULL, spriteCible.imageUtilise.positionEcran, &posiBare);
+
+    SDL_FreeSurface(bareVie);
+
 }

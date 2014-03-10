@@ -44,7 +44,7 @@ void iniResult(imgMenu *vic,imgMenu *def,SDL_Surface *ecran)
     def->positionImg.y=(ecran->h-def->img->h)/2;
 }
 
-void menuPause(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran)
+void menuPause(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran,systEfSound *sound)
 {
     //initialisation variable
     int reprendre=0,quitter=0;
@@ -78,8 +78,11 @@ void menuPause(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecra
     do{
         SDL_BlitSurface(titreTTF,NULL,ecran,&posiText);
 
-        reprendre=bouton(&buton,&butonOn,ecran->w/3,ecran->h/2,*even,texteReprendreTTF);
+        reprendre=bouton(&buton,&butonOn,ecran->w/4,ecran->h/2,*even,texteReprendreTTF);
         quitter=bouton(&buton,&butonOn,ecran->w/2,ecran->h/2,*even,texteQuitterTTF);
+
+        if(reprendre || quitter)
+            Mix_PlayChannel( -1, sound->button, 0 );
 
         SDL_Flip(ecran);
 

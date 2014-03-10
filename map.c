@@ -59,7 +59,10 @@ int chargTileAuto(char string[],tilesets *strucTile)
                 //information tilesets
                 strcpy(strucTile->infoImage[strucTile->nbTilesets].nom,D.name);
                 sprintf(strucTile->infoImage[strucTile->nbTilesets].cheminImage,"%s/%s",string,D.name);
+                strucTile->infoImage[strucTile->nbTilesets].image=NULL;
                 strucTile->infoImage[strucTile->nbTilesets].image=IMG_Load(D.name);
+                if(strucTile->infoImage[strucTile->nbTilesets].image==NULL)
+                    erreur_image(strucTile->infoImage[strucTile->nbTilesets].nom);
 
                 strucTile->nbTilesets++;
 
@@ -87,28 +90,70 @@ void declaration_tilesets(tilesets *tilesetsMap)
     tilesetsMap->nbTilesets=0;
 
     //on chargement les image
-    strcpy(tilesetsMap->infoImage[0].cheminImage,NOM_FICHIER_MAP_TERRE);
-    tilesetsMap->infoImage[0].image=IMG_Load(tilesetsMap->infoImage[0].cheminImage);
-    if(tilesetsMap->infoImage[0].image==NULL)
-    {
-        erreur_image(tilesetsMap->infoImage[0].cheminImage);
-    }
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_TERRE);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
     tilesetsMap->nbTilesets++;
 
-    strcpy(tilesetsMap->infoImage[1].cheminImage,NOM_FICHIER_MAP_CIEL);
-    tilesetsMap->infoImage[1].image=IMG_Load(tilesetsMap->infoImage[1].cheminImage);
-    if(tilesetsMap->infoImage[1].image==NULL)
-    {
-        erreur_image(tilesetsMap->infoImage[1].cheminImage);
-    }
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_CIEL);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
     tilesetsMap->nbTilesets++;
 
-    strcpy(tilesetsMap->infoImage[2].cheminImage,NOM_FICHIER_MAP_ROUGE);
-    tilesetsMap->infoImage[2].image=IMG_Load(tilesetsMap->infoImage[2].cheminImage);
-    if(tilesetsMap->infoImage[2].image==NULL)
-    {
-        erreur_image(tilesetsMap->infoImage[2].cheminImage);
-    }
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_CIEL2);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_NUAGE1);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_NUAGE2);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_NUAGE3);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_DESERT1);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_DESERT2);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_DESERT3);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_DESERT4);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    tilesetsMap->nbTilesets++;
+
+    strcpy(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage,NOM_FICHIER_MAP_TERRE2);
+    tilesetsMap->infoImage[tilesetsMap->nbTilesets].image=IMG_Load(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
+    if(tilesetsMap->infoImage[tilesetsMap->nbTilesets].image==NULL)
+        erreur_image(tilesetsMap->infoImage[tilesetsMap->nbTilesets].cheminImage);
     tilesetsMap->nbTilesets++;
 }
 
@@ -131,7 +176,6 @@ int** map_remplie(SDL_Surface *ecran,tilesets tilesetMap)
     //on met en place la hauteur/largeur de la map
     n=ecran->h/map2->h;
     m=TAILLE_MAP_PREDEFINIE;
-
 
     //-------------------ALLOCATION TABLEAU DYNAMIQUE 2D--------------
 
@@ -157,6 +201,13 @@ int** map_remplie(SDL_Surface *ecran,tilesets tilesetMap)
     }
 
     //---------------------FIN ALLOCATION TABLEAU DYNAMIQUE 2D-----------
+
+    //Initialisation du tableau
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<m;j++)
+            map[i][j]=0;
+    }
 
     //attribution de la map
     for(i=0;i<n;i++)
@@ -198,7 +249,7 @@ int taille_map()
     FILE* fichier=NULL;
 
     //ouverture du fichier
-    fichier=fopen(FICHIER_MAP,"r");
+    fichier=fopen("map.txt","r");
 
     //si l'ouverture échoue
     if (fichier == NULL)
@@ -210,12 +261,19 @@ int taille_map()
     else
     {
         char caractere=NULL;
-        int i=0;
+        int i=0,number=0;
 
         do
         {
             caractere=fgetc(fichier);
-            i++;
+            if(caractere!=' ' && number!=1)
+                {
+                    i++;
+                    number=1;
+                }
+            else if(caractere==' ')
+                number=0;
+
         }while(caractere!='\n');
         i--;
 
@@ -228,7 +286,7 @@ int taille_map()
 
 int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap)
 {
-    if(erreur_chargement_map()==0)
+    if(!(erreur_chargement_map()))
     {
         int **map=NULL;
         int n=0,m=0,i=0,j=0;
@@ -256,7 +314,6 @@ int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap)
         if(map==NULL)
         {
             erreur_allocation("map chargement :Dimention1:");
-            exit(0);
         }
 
         //allocation dynamique a 2 dimensions
@@ -267,13 +324,12 @@ int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap)
            if(map[i]==NULL)
            {
                erreur_allocation("map chargement :Dimention2:");
-               exit(0);
            }
         }
 
         //---------------------FIN ALLOCATION TABLEAU DYNAMIQUE 2D-----------
 
-        //initialisation map
+        //Initialisation du tableau
         for(i=0;i<n;i++)
         {
             for(j=0;j<m;j++)
@@ -282,33 +338,24 @@ int** chargement_map(SDL_Surface *ecran,tilesets tilesetMap)
 
         //chargement de la map
         FILE* fichierMap=NULL;
-        fichierMap=fopen(FICHIER_MAP,"r");
-
-        const int ascii=48;
-        int caractereAscii=0;
+        fichierMap=fopen("map.txt","r");
 
         for(i=0;i<n;i++)
         {
             for(j=0;j<m;j++)
             {
-                caractereAscii=fgetc(fichierMap);
-                if(caractereAscii!=13 && caractereAscii!=10)
-                {
-                    map[i][j]=caractereAscii-ascii;
-                }
-                else
-                {
-                    j--;
-                }
+                fscanf(fichierMap,"%d ",&map[i][j]);
             }
         }
+
+        fclose(fichierMap);
 
         //on libére l'image de test
         SDL_FreeSurface(map2);
 
         return map;
 
-        //libération de la mémoir allouer
+        //libération de la mémoire allouer
         for(i=0;i<n;i++)
         {
             free(map[i]);
@@ -371,7 +418,7 @@ void liberation_tilesets(tilesets *tilesetsMap)
 
 int limite_map(sprite *helico,tilesets *imageMap)
 {
-    int limite=0,largeurMap=50;
+    int limite=0,largeurMap=TAILLE_MAP_PREDEFINIE;
 
     if(taille_map()!=0)
     {

@@ -17,7 +17,7 @@ int animationSprite(int image,int tempsActu,int tempsPrece,sprite *spriteAnime,t
 //Permet d'animé le tir
 void animationTir (sprite *spriteAnime,tilesets *tilesetsMap,int positionMap);
 //permet de blitter le tir du sprite en fonction de la trajectoire. Retourne 1 si le tir est en cour, sinon 0 si il est fini
-int tir(sprite *typeSprite,tilesets tilesetsMap);
+int tir(sprite *typeSprite,tilesets tilesetsMap,Mix_Chunk **soundTir);
 //gerre la vie d'un sprite. renvois 0 si rien ne se passe, renvois 1 si la vie du sprite a diminuer
 int Gestion_Vie_sprite(sprite *Sprite,sprite *helico,tilesets *tilesetsMap,int tempsActu);
 //Regarde si un otage monte dans l'hélico et retourne 1 si c'est le cas sinon 0
@@ -43,10 +43,12 @@ int colisionSpriteHelico(sprite helico,sprite Sprite,tilesets tilesetsMap,int po
 //Initialise l'explosion
 void iniExplosion(imgMenu *explosion,SDL_Surface *ecran);
 //déclenche l'explosion
-void declenchementExplosion(imgMenu *explosion,sprite *spriteToucher, sprite spriteTirreur);
+void declenchementExplosion(imgMenu *explosion,sprite *spriteToucher, sprite spriteTirreur,Mix_Chunk **soundTir);
 //Affiche l'explosion
 void afficheExplosion(sprite *Sprite,imgMenu explosion,tilesets tilesetsMap,int positionMap);
 //On regarde si un otage a été écrasé, si c'est le cas on renvoit 1 sinon 0
 int Helico_ecrase_otage(sprite helico,sprite Otage,int** map,tilesets tilesetsMap,int positionActu);
+//test
+void jaugeVie(sprite spriteCible,int vieTotal,int vieActu,int largueurTile,int positionMap);
 
 #endif // ACTIONSCOMMUNES_H_INCLUDED

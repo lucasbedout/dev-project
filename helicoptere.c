@@ -22,7 +22,7 @@ Date de dernière modification : 26/03/2013
 #include "headers/erreur.h"
 #include "headers/map.h"
 
-#define VITESSE_HELICO 3
+#define VITESSE_HELICO 5
 
 void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
 {
@@ -89,6 +89,9 @@ void iniPosHelicoptere(SDL_Surface *ecran,sprite *helico)
     helico->imageUtilise.tir.actionEnCour=0;
     helico->imageUtilise.tir.nbExplosion=0;
     //-------------------------------
+
+    //Son configuration
+    helico->timeRunSound=0;
 }
 
 
@@ -135,7 +138,7 @@ void deplacementHelico(sprite *helico,SDL_Event* even,int *positionMap,tilesets 
 
 }
 
-int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sprite *helico)
+int animationHelico(int image,int tempsActu,int tempsPrece,SDL_Surface *ecran,sprite *helico,Mix_Chunk **soundSprite)
 {
     if(helico->imageUtilise.direction==GAUCHE)
     {
@@ -247,7 +250,7 @@ int atterrissageHelico(sprite *helico,int** map,tilesets *tilesetsMap,int positi
     }
 }
 
-int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap)
+int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets tilesetsMap,int numeroImage)
 {
     //Variable créer pour réduire le nombre de ligne et facilité la lecture de la condition suivante
     int helicoPosX=0,helicoPosY=0,tirSpriteX=0,tirSpriteY=0,tailleHelicoX=0,tailleHelicoY=0,tailleTirSpriteX=0,tailleTirSpriteY=0;
@@ -258,8 +261,8 @@ int Gestion_Vie_helico(sprite *helico,sprite *ennemie,int positionMap,tilesets t
     tirSpriteX=ennemie->imageUtilise.tir.positionTir.x;
     tirSpriteY=ennemie->imageUtilise.tir.positionTir.y;
 
-    tailleHelicoX=helico->image[IMAGE1].image->w/tilesetsMap.infoImage[IMAGE1].image->w;
-    tailleHelicoY=helico->image[IMAGE1].image->h;
+    tailleHelicoX=helico->image[numeroImage].image->w/tilesetsMap.infoImage[IMAGE1].image->w;
+    tailleHelicoY=helico->image[numeroImage].image->h;
 
     tailleTirSpriteX=ennemie->imageUtilise.tir.image[IMAGE1]->w/tilesetsMap.infoImage[IMAGE1].image->w;
     tailleTirSpriteY=ennemie->imageUtilise.tir.image[IMAGE1]->h;

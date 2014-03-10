@@ -6,6 +6,7 @@ initialise les composants du jeu (fenêtres, variables etc...)
 #include <SDL/SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 
 #include "headers/erreur.h"
 #include "headers/constantes.h"
@@ -29,26 +30,39 @@ int main (int argc, char** argv)
         //initialisation du restart
         restart=0;
 
+        //On li le fichier config et on remplie la structure config
+        config=lec_conf();
+
         // initialisation de la SDL VIDEO
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
         {
             printf("Impossible d'initialiser la librairie vidéo : %s\n", SDL_GetError());
             exit(EXIT_FAILURE);
         }
 
-        //On li le fichier config et on remplie la structure config
-        config=lec_conf();
         //on recuperre les parametre de la fenetre en fonction du fichier de configuration
         dimEcran(&largeur,&hauteur,&config.flagScreen);
 
         // création de l'écran
-        ecran = SDL_SetVideoMode(largeur, hauteur, 32, SDL_HWSURFACE|SDL_DOUBLEBUF|((config.flagScreen&SCREEN_FULL) ? SDL_FULLSCREEN : 0) );
+        ecran = SDL_SetVideoMode(largeur, hauteur, 32, SDL_HWSURFACE|SDL_DOUBLEBUF|((config.flagScreen&SCREEN_FULL) ? SDL_FULLSCREEN : 0));
         //(config.flagScreen&SCREEN_FULL) ? SDL_FULLSCREEN : 0
         if (!ecran)
         {
             printf("Erreur lors de la création de la fenêtre: %s\n", SDL_GetError());
             exit(EXIT_FAILURE);
         }
+
+        //mise en place de l'audio
+        if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
+        {
+            printf("Erreur lors de la création audio: %s\n", SDL_GetError());
+            exit(EXIT_FAILURE);
+        }
+
+        Mix_Music *music = NULL;
+        systEfSound effectSound;
+        effectSound.button=NULL,effectSound.touche=NULL;
+        iniSound(config,&music,&effectSound);
 
         SDL_WM_SetCaption("Choplifter",NULL);
 
@@ -115,31 +129,36 @@ int main (int argc, char** argv)
                             case SDLK_ESCAPE:
                             case SDLK_5:
                             case SDLK_KP5:
+                                Mix_PlayChannel( -1, effectSound.touche , 0 );
                                 continuer=0;
                             break;
 
                             case SDLK_j:
                             case SDLK_1:
                             case SDLK_KP1:
-                                jeu(ecran,police,config);
+                                Mix_PlayChannel( -1, effectSound.touche , 0 );
+                                jeu(ecran,police,config,&effectSound);
                             break;
 
                             case SDLK_e:
                             case SDLK_2:
                             case SDLK_KP2:
+                                Mix_PlayChannel( -1, effectSound.touche , 0 );
                                 editeur(ecran);
                             break;
 
                             case SDLK_q:
                             case SDLK_3:
                             case SDLK_KP3:
+                                Mix_PlayChannel( -1, effectSound.touche , 0 );
                                 affClmt(ecran,police,config.flagCheat);
                             break;
 
                             case SDLK_o:
                             case SDLK_4:
                             case SDLK_KP4:
-                                restart = ecranConf(ecran,police,buton,butonOn);
+                                Mix_PlayChannel( -1, effectSound.touche , 0 );
+                                restart = ecranConf(ecran,police,buton,butonOn,&effectSound);
                                 continuer = !(restart);
                             break;
                         }
@@ -154,18 +173,27 @@ int main (int argc, char** argv)
             positionMenu.y = ecran->h/2-Menu->h/2;
             SDL_BlitSurface(Menu, NULL, ecran, &positionMenu);
 
-            if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,100,event,texte))
-                jeu(ecran,police,config);
-            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,200,event,texte2))
+            if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,ecran->h*1.5/10,event,texte)){
+                Mix_PlayChannel( -1, effectSound.button, 0 );
+                jeu(ecran,police,config,&effectSound);
+            }
+            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,ecran->h*3/10,event,texte2)){
+                Mix_PlayChannel( -1, effectSound.button, 0 );
                 editeur(ecran);
-            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,300,event,texte3))
+            }
+            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,ecran->h*4.5/10,event,texte3)){
+                Mix_PlayChannel( -1, effectSound.button, 0 );
                 affClmt(ecran,police,config.flagCheat);
-            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,400,event,texte4)){
-                restart = ecranConf(ecran,police,buton,butonOn);
+            }
+            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,ecran->h*6/10,event,texte4)){
+                Mix_PlayChannel( -1, effectSound.button, 0 );
+                restart = ecranConf(ecran,police,buton,butonOn,&effectSound);
                 continuer = !(restart);
-                }
-            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,500,event,texte5))
+            }
+            else if(bouton(&buton,&butonOn,ecran->w/2-buton.img->w/2,ecran->h*7.5/10,event,texte5)){
+                Mix_PlayChannel( -1, effectSound.button, 0 );
                 continuer=0;
+            }
 
             SDL_Flip(ecran);
 
@@ -179,6 +207,17 @@ int main (int argc, char** argv)
         SDL_FreeSurface(texte2);
         SDL_FreeSurface(texte3);
         SDL_FreeSurface(texte4);
+        if(config.flagSound&FLAG_MUSIQUE)
+            //Libération de la musique
+            Mix_FreeMusic( music );
+        if(config.flagSound&FLAG_EFFET)
+        {
+            Mix_FreeChunk( effectSound.button );
+            Mix_FreeChunk( effectSound.touche );
+            Mix_FreeChunk( effectSound.aplause );
+        }
+        //On quitte SDL_mixer
+        Mix_CloseAudio();
 
         TTF_CloseFont(police);
         TTF_Quit();
@@ -200,4 +239,30 @@ void iniBouton(imgMenu *buton,imgMenu *butonOn,SDL_Surface *ecran)
         erreur_image(NOM_BOUTON_ON);
     buton->ecran=ecran;
     butonOn->ecran=ecran;
+}
+
+void iniSound(conf config,Mix_Music **music,systEfSound *sound)
+{
+    if(config.flagSound&FLAG_MUSIQUE)
+    {
+        *music = Mix_LoadMUS(MUSIQUE_MENU);
+        if(NULL!=*music)
+            Mix_PlayMusic( *music, -1 );
+        else
+            erreur_indef(MUSIQUE_MENU);
+    }
+    if(config.flagSound&FLAG_EFFET)
+    {
+        sound->button = Mix_LoadWAV(SYSTEME_BUTTON);
+        if(sound->button==NULL)
+            erreur_indef(SYSTEME_BUTTON);
+
+        sound->touche = Mix_LoadWAV(SYSTEME_ESCAP);
+        if(sound->touche==NULL)
+            erreur_indef(SYSTEME_ESCAP);
+
+        sound->aplause = Mix_LoadWAV(SYSTEME_APLAUSE);
+        if(sound->aplause==NULL)
+            erreur_indef(SYSTEME_APLAUSE);
+    }
 }

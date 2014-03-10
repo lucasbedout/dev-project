@@ -298,16 +298,22 @@ void save_map(int** map,SDL_Surface *ecran,tilesets imageMap,SDL_Event *even,Lis
             {
                 for(j=0;j<m;j++)
                 {
-                    fprintf(fichier,"%d",map[i][j]);
+                    fprintf(fichier,"%d ",map[i][j]);
                 }
                 //Si la position max de la map est supérieur a 0
                 if(positionMax>0)
                 {
                     //Alors on parcour les listes de colonne i
-                    for(j=0;j<(positionMax-1);j++)
+                    for(j=0;j<(positionMax-1) || j<TAILLE_MAP_PREDEFINIE;j++)
                     {
-                        fprintf(fichier,"%d",cursor->colonne[i]);
-                        cursor=cursor->suivant;
+                        if(j>=(positionMax-1))
+                            fprintf(fichier,"%d ",1);
+                        else
+                        {
+                            fprintf(fichier,"%d ",cursor->colonne[i]);
+                            cursor=cursor->suivant;
+                        }
+
                     }
                     //on revient au debus de la liste
                     cursor=liste->premier;

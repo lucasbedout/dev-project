@@ -37,4 +37,6 @@ void decallement_image_map_hauteurPixel(sprite *image,tilesets *tilesetsMap,int 
 //Retourne la hauteur la plus grande de l'interval
 int hauteur_sol_max(int** map,tilesets *tilesetsMap,SDL_Surface *ecran,int positionIni,int positionFin);
 
+int** lectureMap();
+
 #endif // MAP_H_INCLUDED

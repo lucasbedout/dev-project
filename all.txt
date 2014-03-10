@@ -1,2 +1,4 @@
 Dimention=1
 Cheat=0
+Niveau=2
+Musique=1

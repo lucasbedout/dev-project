@@ -2,9 +2,11 @@
 #define CONF_H_INCLUDED
 
 //Affiche les options possibles du jeu. Retourne 1 si le jeu doit restart, sinon retourne 0
-int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn);
+int ecranConf(SDL_Surface *ecran,TTF_Font *police,imgMenu buton,imgMenu butonOn,systEfSound *sound);
 //retourne une chaine de caractère qui correspond au dimention de l'écran
 char* valScreen(int ecranDim);
+//retourne une chaine de caractère qui correspond au level
+char* valLevel(int level);
 //retourne la structure de configuration du jeu
 conf lec_conf();
 //Retourne les dimensions de l'écran celon les flags

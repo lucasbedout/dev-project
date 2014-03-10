@@ -26,7 +26,7 @@ Date de dernière modification : 26/03/2013
 #include "headers/map.h"
 #include "headers/classement.h"
 
-void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
+void jeu (SDL_Surface *ecran,TTF_Font *police,conf config,systEfSound *sound)
 {
     //création d'un evennement
     SDL_Event even;
@@ -35,6 +35,13 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     //Sera utilisé pour une boucle ou double boucle
     int i=0,j=0;
     //--------------------------------------------------------------
+
+    //---------VARIABLE AUDIO----------------
+    //Initilisation les variables audio
+    Mix_Chunk *avionEffect=NULL,*soucoupeEffect=NULL,*tankEffect=NULL,*helicoEffect=NULL,*explosionEffect=NULL,*shootEffect=NULL;
+    iniSoundJeu(config,&avionEffect,&soucoupeEffect,&tankEffect,&helicoEffect,&explosionEffect,&shootEffect);
+    activSoundJeu(config,&avionEffect,&soucoupeEffect,&tankEffect,&helicoEffect);
+    //---------------------------------------
 
     //-------------------VARIABLE TTF--------------------------
     SDL_Surface *texteVieTTF=NULL,*texteOtageBordTTF=NULL,*texteOtageSauveTTF=NULL,*texteScoreTTF=0;
@@ -75,8 +82,8 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     tank=malloc(sizeof(sprite)*NOMBRE_TANK);
     for(i=0;i<NOMBRE_TANK;i++)
     {
-        iniTank(ecran,&tank[i]);
-        tank[i].image[IMAGE1].position.x=spawnAlea(&tank[i],&tilesetsMap);
+        iniTank(ecran,&tank[i],config.level);
+        tank[i].image[IMAGE1].position.x=spawnAlea(&tank[i],&tilesetsMap,positionMap);
     }
     //------------------------------------------
 
@@ -85,8 +92,8 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     avion=malloc(sizeof(sprite)*NOMBRE_AVION);
     for(i=0;i<NOMBRE_AVION;i++)
     {
-        iniAvion(ecran,&avion[i]);
-        avion[i].image[IMAGE1].position.x=spawnAlea(&avion[i],&tilesetsMap);
+        iniAvion(ecran,&avion[i],config.level);
+        avion[i].image[IMAGE1].position.x=spawnAlea(&avion[i],&tilesetsMap,positionMap);
     }
     //------------------------------------------
 
@@ -95,8 +102,8 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     soucoupe=malloc(sizeof(sprite)*NOMBRE_SOUCOUPE);
     for(i=0;i<NOMBRE_SOUCOUPE;i++)
     {
-        iniSoucoupe(ecran,&soucoupe[i]);
-        soucoupe[i].image[IMAGE1].position.x=spawnAlea(&soucoupe[i],&tilesetsMap);
+        iniSoucoupe(ecran,&soucoupe[i],config.level);
+        soucoupe[i].image[IMAGE1].position.x=spawnAlea(&soucoupe[i],&tilesetsMap,positionMap);
     }
     //------------------------------------------
 
@@ -163,7 +170,7 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
 
     while(continuer && helico.vie>0 && restOtage(Otage,nbCaserne,nbOtageBord) )
     {
-        option(&continuer,&even,police,ecran);
+        option(&continuer,&even,police,ecran,sound,config,&helicoEffect);
 
         deplacementHelico(&helico,&even,&positionMap,&tilesetsMap,map);
 
@@ -210,7 +217,7 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
         //Si l'action est en cour, on blitte le tir enfonction de l'équation
         else
         {
-            tir(&helico,tilesetsMap);
+            tir(&helico,tilesetsMap,&shootEffect);
             decallement_image_map_hauteurPixel(&helico,&tilesetsMap,helico.imageUtilise.tir.positionTir.y,helico.imageUtilise.tir.positionTir.x,positionMap,helico.imageUtilise.tir.image[IMAGE1]);
         }
         //-------------FIN PARTIE TIR----------------
@@ -220,7 +227,7 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
         //On blitte les animations de l'hélico en fonction si l'hélico est atérie ou pas
         if(0==atterrissageHelico(&helico,map,&tilesetsMap,positionMap))
         {
-            helico.imageUtilise.numeroImage=animationHelico(helico.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[1],ecran,&helico);
+            helico.imageUtilise.numeroImage=animationHelico(helico.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[1],ecran,&helico,&helicoEffect);
         }
         else
         {
@@ -228,12 +235,13 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
         }
 
         //-------------animation ennemies---------
-        for(i=0;i<NOMBRE_TANK && ((i*IMPORTANCE_TANK)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne)) ;i++)
+        for(i=0;i<NOMBRE_TANK && ((i*IMPORTANCE_TANK)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne)) && config.level;i++)
         {
             if(tank[i].vie>0)
             {
                 deplacementTank(&tank[i],positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[13+(i*TMP_DECAL_TAB_TANK)]));
                 tank[i].imageUtilise.numeroImage=animationSprite(tank[i].imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[12+(i*TMP_DECAL_TAB_TANK)],&tank[i],&tilesetsMap,positionMap);
+                jaugeVie(tank[i],(config.level==LEVEL_LEGENDE) ? VIE_TANK*2 : VIE_TANK,tank[i].vie,tilesetsMap.infoImage[0].image->w,positionMap);
                 //vérifie si le tank tir
                 if(tank[i].imageUtilise.tir.actionEnCour==0)
                 {
@@ -241,17 +249,17 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
                     calculTrajectoireTank(&tank[i],&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[14+(i*TMP_DECAL_TAB_TANK)]));
                 }
                 if(Gestion_Vie_sprite(&tank[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
-                    declenchementExplosion(&explosion,&tank[i],helico);
+                    declenchementExplosion(&explosion,&tank[i],helico,&explosionEffect);
             }
             else
-                respawn(&tank[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_TANK,VIE_TANK);
+                respawn(&tank[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_TANK,(config.level==LEVEL_LEGENDE) ? VIE_TANK*2 : VIE_TANK,config.level,positionMap);
 
             //Si l'action est en cour, on blitte le tir enfonction de l'équation
             if(tank[i].imageUtilise.tir.actionEnCour==1)
             {
                 if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[16+(i*TMP_DECAL_TAB_TANK)]+1000/VITESSE_TIR_ENNEMIE) )
                 {
-                    tir(&tank[i],tilesetsMap);
+                    tir(&tank[i],tilesetsMap,&shootEffect);
                     tempsJeu.tempsPrecedent[16+(i*TMP_DECAL_TAB_TANK)]=tempsJeu.tempsActuel;
                 }
                 decallement_image_map_hauteurPixel(&tank[i],&tilesetsMap,tank[i].imageUtilise.tir.positionTir.y,tank[i].imageUtilise.tir.positionTir.x,positionMap,tank[i].imageUtilise.tir.image[IMAGE1]);
@@ -261,30 +269,31 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
                 afficheExplosion(&tank[i],explosion,tilesetsMap,positionMap);
         }
 
-        for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+        for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne)) && config.level;i++)
         {
             if(avion[i].vie>0)
             {
                 deplacementAvion(&avion[i],&helico,positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[26+(i*TMP_DECAL_TAB_AVION)]));
                 avion[i].imageUtilise.numeroImage=animationSprite(avion[i].imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[25+(i*TMP_DECAL_TAB_AVION)],&avion[i],&tilesetsMap,positionMap);
+                jaugeVie(avion[i],(config.level==LEVEL_LEGENDE) ? VIE_AVION*2 : VIE_AVION,avion[i].vie,tilesetsMap.infoImage[0].image->w,positionMap);
                 //vérifie si l'avion tir
                 if(avion[i].imageUtilise.tir.actionEnCour==0)
                 {
                     //Si l'utilisateur tir, on calcullera la trajectoire
-                    calculTrajectoireAvion(&avion[i],&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[27+(i*TMP_DECAL_TAB_AVION)]));
+                    calculTrajectoireAvion(&avion[i],&helico,positionMap,&tilesetsMap,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[27+(i*TMP_DECAL_TAB_AVION)]),&shootEffect);
                 }
                 if(Gestion_Vie_sprite(&avion[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
-                    declenchementExplosion(&explosion,&avion[i],helico);
+                    declenchementExplosion(&explosion,&avion[i],helico,&explosionEffect);
             }
             else
-                respawn(&avion[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_AVION,VIE_AVION);
+                respawn(&avion[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_AVION,(config.level==LEVEL_LEGENDE) ? VIE_AVION*2 : VIE_AVION,config.level,positionMap);
 
             //Si l'action est en cour, on blitte le tir enfonction de l'équation
             if(avion[i].imageUtilise.tir.actionEnCour==1)
             {
                 if(tempsJeu.tempsActuel>(tempsJeu.tempsPrecedent[28+(i*TMP_DECAL_TAB_AVION)]+1000/VITESSE_TIR_ENNEMIE) )
                 {
-                    tir(&avion[i],tilesetsMap);
+                    tir(&avion[i],tilesetsMap,&shootEffect);
                     tempsJeu.tempsPrecedent[28+(i*TMP_DECAL_TAB_AVION)]=tempsJeu.tempsActuel;
                 }
                 animationTir(&avion[i],&tilesetsMap,positionMap);
@@ -295,18 +304,19 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
 
         }
 
-        for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
+        for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne)) && config.level;i++)
         {
             if(soucoupe[i].vie>0)
             {
                 deplacementSoucoupe(&soucoupe[i],&helico,positionMap,&tilesetsMap,map,tempsJeu.tempsActuel,&(tempsJeu.tempsPrecedent[30]));
                 soucoupe[i].imageUtilise.numeroImage=animationSprite(soucoupe[i].imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[29],&soucoupe[i],&tilesetsMap,positionMap);
+                jaugeVie(soucoupe[i],(config.level==LEVEL_LEGENDE) ? VIE_SOUCOUPE*2 : VIE_SOUCOUPE,soucoupe[i].vie,tilesetsMap.infoImage[0].image->w,positionMap);
 
                 if(Gestion_Vie_sprite(&soucoupe[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
-                    declenchementExplosion(&explosion,&soucoupe[i],helico);
+                    declenchementExplosion(&explosion,&soucoupe[i],helico,&explosionEffect);
             }
             else
-                respawn(&soucoupe[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_SOUCOUPE,VIE_SOUCOUPE);
+                respawn(&soucoupe[i],&tilesetsMap,tempsJeu.tempsActuel,RESPAWN_SOUCOUPE,(config.level==LEVEL_LEGENDE) ? VIE_SOUCOUPE*2 : VIE_SOUCOUPE,config.level,positionMap);
 
             if(soucoupe[i].imageUtilise.tir.nbExplosion>0)
                 afficheExplosion(&soucoupe[i],explosion,tilesetsMap,positionMap);
@@ -323,11 +333,11 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
                 for(j=0;j<NOMBRE_TANK;j++)
                     {
                         if(Gestion_Vie_sprite(&caserne[i],&tank[j],&tilesetsMap,tempsJeu.tempsActuel))
-                            declenchementExplosion(&explosion,&caserne[i],tank[j]);
+                            declenchementExplosion(&explosion,&caserne[i],tank[j],&explosionEffect);
                     }
 
                 if(Gestion_Vie_sprite(&caserne[i],&helico,&tilesetsMap,tempsJeu.tempsActuel))
-                    declenchementExplosion(&explosion,&caserne[i],helico);
+                    declenchementExplosion(&explosion,&caserne[i],helico,&explosionEffect);
             }
             else
             {
@@ -341,7 +351,7 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
                     Otage[i].strucSprite.imageUtilise.numeroImage=animationSprite(Otage[i].strucSprite.imageUtilise.numeroImage,tempsJeu.tempsActuel,tempsJeu.tempsPrecedent[nbCaserne+i],&Otage[i].strucSprite,&tilesetsMap,positionMap);
                     //Si l'otage se fait attaqué par un ennemie ou l'hélico
                     if(Gestion_Vie_sprite(&(Otage[i].strucSprite),&helico,&tilesetsMap,tempsJeu.tempsActuel))
-                        declenchementExplosion(&explosion,&Otage[i].strucSprite,helico);
+                        declenchementExplosion(&explosion,&Otage[i].strucSprite,helico,&explosionEffect);
 
                     //Si un otage se fait écrasé et que l'hélico n'était pas en train de décoller
                     if(Helico_ecrase_otage(helico,Otage[i].strucSprite,map,tilesetsMap,positionMap))
@@ -350,7 +360,7 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
                     for(j=0;j<NOMBRE_TANK;j++)
                     {
                         if(Gestion_Vie_sprite(&(Otage[i].strucSprite),&tank[j],&tilesetsMap,tempsJeu.tempsActuel))
-                            declenchementExplosion(&explosion,&Otage[i].strucSprite,tank[i]);
+                            declenchementExplosion(&explosion,&Otage[i].strucSprite,tank[i],&explosionEffect);
                     }
                     gestionFileOtage(&(Otage[i]),&helico,caserne[i].image[IMAGE1].position.x,caserne[i].image[IMAGE1].position.y,map,&tilesetsMap,positionMap,&nbOtageBord);
                 }
@@ -380,18 +390,18 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
             //On regarde enfin si l'hélicoptère c'est fait toucher par un ennemie
             for(i=0;i<NOMBRE_TANK && ((i*IMPORTANCE_TANK)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
             {
-                if(Gestion_Vie_helico(&helico,&tank[i],positionMap,tilesetsMap))
-                    declenchementExplosion(&explosion,&helico,tank[i]);
+                if(Gestion_Vie_helico(&helico,&tank[i],positionMap,tilesetsMap,helico.imageUtilise.numeroImage))
+                    declenchementExplosion(&explosion,&helico,tank[i],&explosionEffect);
             }
             for(i=0;i<NOMBRE_AVION && (((i+1)*IMPORTANCE_AVION)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
             {
-                if(Gestion_Vie_helico(&helico,&avion[i],positionMap,tilesetsMap))
-                    declenchementExplosion(&explosion,&helico,avion[i]);
+                if(Gestion_Vie_helico(&helico,&avion[i],positionMap,tilesetsMap,helico.imageUtilise.numeroImage))
+                    declenchementExplosion(&explosion,&helico,avion[i],&explosionEffect);
             }
             for(i=0;i<NOMBRE_SOUCOUPE && (((i+1)*IMPORTANCE_SOUCOUPE)<=pourcentSavOtage(nbOtageBord,nbOtageBase,nbCaserne));i++)
             {
                 if(gestion_colision_helico(&helico,&soucoupe[i],positionMap,tilesetsMap))
-                    declenchementExplosion(&explosion,&helico,soucoupe[i]);
+                    declenchementExplosion(&explosion,&helico,soucoupe[i],&explosionEffect);
             }
 
             if(helico.imageUtilise.tir.nbExplosion>0)
@@ -417,6 +427,9 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     //On stop la répétition des touches
     SDL_EnableKeyRepeat(0,0);
 
+    //stop son
+    stopSoundJeu(config,&helicoEffect);
+
     //création de la surface qui va faire office de fond transparent
     SDL_Surface *screen;
     SDL_Rect posiScreen={0};
@@ -432,7 +445,7 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     {
         SDL_BlitSurface(victoire.img,NULL,ecran,&victoire.positionImg);
         //On fonction du temps on ajoute des points au score. Plus le temps est court et plus il y a de point ajouter
-        score+=(1/(tempsJeu.tempsActuel-tempsJeu.tempsDebut))*COEF_TMP_VIC+helico.vie*COEF_VIE_VIC;
+        score+=(1/(tempsJeu.tempsActuel-tempsJeu.tempsDebut))*COEF_TMP_VIC+helico.vie*COEF_VIE_VIC+COEF_DIFFICULT*config.level;
     }
     else if(helico.vie<=0)
         SDL_BlitSurface(defaite.img,NULL,ecran,&defaite.positionImg);
@@ -450,13 +463,15 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     //On verifie si un new score a été produit
     if(newScoreClmt(score))
     {
+        if(config.flagSound&FLAG_EFFET)
+            Mix_PlayChannel( -1, sound->aplause, 0 );
         char name[20]="";
         sprintf(name,"%s",enterName(score,police,ecran));
         insertNewScore(name,score);
         affClmt(ecran,police,config.flagCheat);
     }
 
-    //on libere les images chargeren mémoire
+    //on libere les images charger en mémoire
     for(i=0;i<=IMAGE4;i++)
     {
         for(j=0;j<NOMBRE_TANK;j++)
@@ -507,9 +522,12 @@ void jeu (SDL_Surface *ecran,TTF_Font *police,conf config)
     SDL_FreeSurface(victoire.img);
     SDL_FreeSurface(defaite.img);
 
+    //liberation des sons
+    libSoundJeu(config,&avionEffect,&soucoupeEffect,&tankEffect,&helicoEffect,&explosionEffect,&shootEffect);
+
 }
 
-void option(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran)
+void option(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran,systEfSound *sound,conf config,Mix_Chunk **helicoSound)
 {
     SDL_PollEvent(even);
 
@@ -523,7 +541,11 @@ void option(int* continuer,SDL_Event *even,TTF_Font *police,SDL_Surface *ecran)
                 switch(even->key.keysym.sym)
                 {
                     case SDLK_ESCAPE:
-                        menuPause(continuer,even,police,ecran);
+                        stopSoundJeu(config,helicoSound);
+                        if(config.flagSound&FLAG_EFFET)
+                            Mix_PlayChannel( -1, sound->touche, 0 );
+                        menuPause(continuer,even,police,ecran,sound);
+                        repriseSoundJeu(config,helicoSound);
                         break;
                 }
                 break;
@@ -538,4 +560,81 @@ void initilisationTemps(int tab[TAILLE_TABLEAU_TEMPS])
     {
         tab[i]=0;
     }
+}
+
+void iniSoundJeu(conf config,Mix_Chunk **avionEffect,Mix_Chunk **soucoupeEffect,Mix_Chunk **tankEffect,Mix_Chunk **helicoEffect,Mix_Chunk **explosionEffect,Mix_Chunk **shootEffect)
+{
+    if(config.flagSound&FLAG_EFFET)
+    {
+        *avionEffect = Mix_LoadWAV(EFFECT_AVION);
+        if(*avionEffect==NULL)
+            erreur_indef(EFFECT_AVION);
+
+        *soucoupeEffect = Mix_LoadWAV(EFFECT_SOUCOUPE);
+        if(*soucoupeEffect==NULL)
+            erreur_indef(EFFECT_SOUCOUPE);
+
+        *tankEffect = Mix_LoadWAV(EFFECT_TANK);
+        if(*tankEffect==NULL)
+            erreur_indef(EFFECT_TANK);
+
+        *helicoEffect = Mix_LoadWAV(EFFECT_HELICO);
+        if(*helicoEffect==NULL)
+            erreur_indef(EFFECT_HELICO);
+
+        *shootEffect = Mix_LoadWAV(EFFECT_SHOOT);
+        if(*shootEffect==NULL)
+            erreur_indef(EFFECT_SHOOT);
+        else
+            Mix_VolumeChunk(*shootEffect, MIX_MAX_VOLUME/2);
+
+        *explosionEffect = Mix_LoadWAV(EFFECT_EXPLOSION);
+        if(*explosionEffect==NULL)
+            erreur_indef(EFFECT_EXPLOSION);
+        else
+            Mix_VolumeChunk(*explosionEffect, MIX_MAX_VOLUME/2);
+    }
+}
+
+void libSoundJeu(conf config,Mix_Chunk **avionEffect,Mix_Chunk **soucoupeEffect,Mix_Chunk **tankEffect,Mix_Chunk **helicoEffect,Mix_Chunk **explosionEffect,Mix_Chunk **shootEffect)
+{
+    if(config.flagSound&FLAG_EFFET)
+    {
+        Mix_FreeChunk( *avionEffect );
+        Mix_FreeChunk( *soucoupeEffect );
+        Mix_FreeChunk( *tankEffect );
+        Mix_FreeChunk( *helicoEffect );
+        Mix_FreeChunk( *explosionEffect );
+        Mix_FreeChunk( *shootEffect );
+    }
+}
+
+void activSoundJeu(conf config,Mix_Chunk **avionEffect,Mix_Chunk **soucoupeEffect,Mix_Chunk **tankEffect,Mix_Chunk **helicoEffect)
+{
+    if(config.flagSound&FLAG_EFFET)
+    {
+        //on déclenche le son du tir
+        Mix_PlayChannel(0, *helicoEffect, -1);
+        Mix_PlayChannel(1, *soucoupeEffect, -1);
+        Mix_PlayChannel(2, *avionEffect, -1);
+        Mix_PlayChannel(3, *tankEffect, -1);
+
+        //réglage du son
+        Mix_VolumeChunk(*helicoEffect, MIX_MAX_VOLUME/2);
+        Mix_VolumeChunk(*soucoupeEffect, 0);
+        Mix_VolumeChunk(*avionEffect, 0);
+        Mix_VolumeChunk(*tankEffect, 0);
+    }
+}
+
+void stopSoundJeu(conf config,Mix_Chunk **sound)
+{
+    if(config.flagSound&FLAG_EFFET)
+        Mix_VolumeChunk(*sound, 0);
+}
+
+void repriseSoundJeu(conf config,Mix_Chunk **sound)
+{
+    if(config.flagSound&FLAG_EFFET)
+        Mix_VolumeChunk(*sound, MIX_MAX_VOLUME/2);
 }

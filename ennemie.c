@@ -47,7 +47,7 @@ Date de dernière modification : 05/04/2013
 //------------------------------------------------------------------------
 
 //-----------------------------------------------PARTIE TANK---------------------------------------------------
-void iniTank(SDL_Surface *ecran,sprite *tank)
+void iniTank(SDL_Surface *ecran,sprite *tank,int level)
 {
     int i=0;
 
@@ -96,7 +96,7 @@ void iniTank(SDL_Surface *ecran,sprite *tank)
     }
 
     //vie du tank
-    tank->vie=VIE_TANK;
+    tank->vie=(level==LEVEL_LEGENDE) ? VIE_TANK*2 : VIE_TANK;
     tank->tempsMort=0;
 
     //on attribue les propriété de l'écran a la structure tank
@@ -115,6 +115,9 @@ void iniTank(SDL_Surface *ecran,sprite *tank)
     tank->imageUtilise.tir.actionEnCour=0;
     tank->imageUtilise.tir.nbExplosion=0;
     //-------------------------------
+
+    //Son configuration
+    tank->timeRunSound=0;
 }
 
 void deplacementTank(sprite *tank,int positionMap,tilesets *tilesetsMap,int** map,int tempsActu,int *tempsTank)
@@ -175,7 +178,7 @@ void calculTrajectoireTank(sprite *tank,sprite *helico,int positionMap,tilesets 
 //-------------------------------------------------------------------------------------------------------------
 
 //-----------------------------------------------PARTIE AVION--------------------------------------------------
-void iniAvion(SDL_Surface *ecran,sprite *avion)
+void iniAvion(SDL_Surface *ecran,sprite *avion,int level)
 {
     int i=0;
 
@@ -243,7 +246,7 @@ void iniAvion(SDL_Surface *ecran,sprite *avion)
     }
 
     //vie de l'avion
-    avion->vie=VIE_AVION;
+    avion->vie=(level==LEVEL_LEGENDE) ? VIE_AVION*2 : VIE_AVION;
     avion->tempsMort=0;
 
     //on attribue les propriété de l'écran a la structure avion
@@ -263,6 +266,9 @@ void iniAvion(SDL_Surface *ecran,sprite *avion)
     avion->imageUtilise.tir.nbExplosion=0;
     avion->imageUtilise.tir.numeroImage=IMAGE1;
     //-------------------------------
+
+    //Son configuration
+    avion->timeRunSound=0;
 }
 
 void deplacementAvion(sprite *avion,sprite *helico,int positionMap,tilesets *tilesetsMap,int** map,int tempsActu,int *tempsAvion)
@@ -312,7 +318,7 @@ void deplacementAvion(sprite *avion,sprite *helico,int positionMap,tilesets *til
     }
 }
 
-void calculTrajectoireAvion(sprite *avion,sprite *helico,int positionMap,tilesets *tilesetsMap,int tempsActu,int *tempsPrece)
+void calculTrajectoireAvion(sprite *avion,sprite *helico,int positionMap,tilesets *tilesetsMap,int tempsActu,int *tempsPrece,Mix_Chunk **soundTir)
 {
     //création de variable qui vont permetre de rendre lisible la condition
     int differenceHauteur=0,positionHelicoY=0,positionAvionX=0,positionAvionY=0;
@@ -330,6 +336,9 @@ void calculTrajectoireAvion(sprite *avion,sprite *helico,int positionMap,tileset
          ((positionMap-positionAvionX)>( -1*PORTER_TIR_AVION/tilesetsMap->infoImage[IMAGE1].image->w ))  ) && //idem
            ( positionAvionY-(differenceHauteur/2)>=positionHelicoY ) && ( positionAvionY-(differenceHauteur/2)<=positionHelicoY+helico->image[IMAGE1].image->h/2 ) ) ) //partie si l'hélico est en face
     {
+        //on déclenche le son du tir
+        Mix_PlayChannel( -1, *soundTir, 0 );
+
         //on prends la position de la cible en prenant la colonne ( unité de valeur : tileset ) et les y en pixel
         avion->imageUtilise.tir.cibleTir.x=positionMap;
         avion->imageUtilise.tir.cibleTir.y=helico->image[IMAGE1].position.y+helico->image[IMAGE1].image->h/2;
@@ -373,7 +382,7 @@ void calculTrajectoireAvion(sprite *avion,sprite *helico,int positionMap,tileset
 //-------------------------------------------------------------------------------------------------------------
 
 //-----------------------------------------------PARTIE SOUCOUPE-----------------------------------------------
-void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
+void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe,int level)
 {
     int i=0;
 
@@ -402,7 +411,7 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
     soucoupe->image[IMAGE1].position.y=0;
 
     //vie de la soucoupe
-    soucoupe->vie=VIE_SOUCOUPE;
+    soucoupe->vie=(level==LEVEL_LEGENDE) ? VIE_SOUCOUPE*2 : VIE_SOUCOUPE;
     soucoupe->tempsMort=0;
 
     //on attribue les propriété de l'écran a la structure soucoupe
@@ -420,6 +429,8 @@ void iniSoucoupe(SDL_Surface *ecran,sprite *soucoupe)
     soucoupe->imageUtilise.tir.nbExplosion=0;
     //-------------------------------
 
+    //Son configuration
+    soucoupe->timeRunSound=0;
 }
 
 void deplacementSoucoupe(sprite *soucoupe,sprite *helico,int positionMap,tilesets *tilesetsMap,int** map,int tempsActu,int *tempsSoucoupe)
@@ -459,7 +470,7 @@ void deplacementSoucoupe(sprite *soucoupe,sprite *helico,int positionMap,tileset
 //-------------------------------------------------------------------------------------------------------------
 
 //-----------------------------------------------PARTIE GENERALE-----------------------------------------------
-int spawnAlea(sprite *Sprite,tilesets *tilesetsMap)
+int spawnAlea(sprite *Sprite,tilesets *tilesetsMap,int positionMap)
 {
     int nombre_aleatoire=0,limiteMax=taille_map(),limiteMin=saveZone(Sprite,tilesetsMap);
 
@@ -470,6 +481,15 @@ int spawnAlea(sprite *Sprite,tilesets *tilesetsMap)
 
     //srand(time(NULL));
     nombre_aleatoire = rand()%(limiteMax-limiteMin) +limiteMin;
+
+    if(nombre_aleatoire<positionMap+Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w &&
+       nombre_aleatoire>positionMap-Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w)
+    {
+        if(positionMap+Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w<limiteMax)
+            nombre_aleatoire=positionMap+Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w;
+        else
+            nombre_aleatoire=positionMap-Sprite->imageUtilise.positionEcran->w/tilesetsMap->infoImage[IMAGE1].image->w;
+    }
 
     return nombre_aleatoire;
 }
@@ -482,12 +502,18 @@ int autorisationRespawn(sprite *Sprite,int tempsActu,int tempsRespawn)
         return 1;
 }
 
-void respawn(sprite *Sprite,tilesets *tilesetsMap,int tempsActu,int tempsRespawn,int vie)
+void respawn(sprite *Sprite,tilesets *tilesetsMap,int tempsActu,int tempsRespawn,int vie,int difficulte,int positionMap)
 {
+    //Si le level est easy, on double le temps que met le sprite a spawn, difficil : on le divise par deux
+    if(difficulte==LEVEL_EASY)
+        tempsRespawn*=2;
+    else if(difficulte==LEVEL_HARD || difficulte==LEVEL_LEGENDE)
+        tempsRespawn/=2;
+
     if(autorisationRespawn(Sprite,tempsActu,tempsRespawn)==1 && Sprite->vie<=0)
     {
         Sprite->vie=vie;
-        Sprite->image[IMAGE1].position.x=spawnAlea(Sprite,tilesetsMap);
+        Sprite->image[IMAGE1].position.x=spawnAlea(Sprite,tilesetsMap,positionMap);
     }
 }
 //-------------------------------------------------------------------------------------------------------------
